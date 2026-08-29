@@ -19,15 +19,15 @@ def parse_args():
                         help="Model name, path, or Hugging Face repository ID")
     parser.add_argument("--adapter", type=str, default=None,
                         help="Optional path to fine-tuned PEFT / LoRA adapter")
-    parser.add_argument("--data", type=str, default="data/val_split.jsonl",
-                        help="Evaluation dataset file (e.g., val_split.jsonl, train_augmented.jsonl)")
-    parser.add_argument("--ground_truth", type=str, default="data/ground_truth.csv",
+    parser.add_argument("--data", type=str, default="data/splits/val.jsonl",
+                        help="Evaluation dataset file (e.g., data/splits/val.jsonl)")
+    parser.add_argument("--ground_truth", type=str, default="data/raw_database/ground_truth.csv",
                         help="Path to ground_truth.csv")
-    parser.add_argument("--events_db", type=str, default="data/events.jsonl",
-                        help="Path to events.jsonl database (optional)")
-    parser.add_argument("--output_json", type=str, default="eval_report.json",
+    parser.add_argument("--events_db", type=str, default="data/raw_database/events_db.jsonl",
+                        help="Path to events_db.jsonl database")
+    parser.add_argument("--output_json", type=str, default="eval_reports/eval_report.json",
                         help="Path for output JSON metrics")
-    parser.add_argument("--output_md", type=str, default="eval_report.md",
+    parser.add_argument("--output_md", type=str, default="eval_reports/eval_report.md",
                         help="Path for human-readable markdown report")
     parser.add_argument("--max_samples", type=int, default=None,
                         help="Maximum number of windows to evaluate (optional)")
@@ -96,12 +96,16 @@ def main():
         window_date = extract_date_from_prompt(user_prompt)
 
         print(f"\n--- Evaluating Window [{idx+1}/{len(samples)}] (Date: {window_date}) ---")
-        prediction = runner.generate(
-            system_prompt=system_prompt,
-            user_prompt=user_prompt,
-            max_new_tokens=args.max_new_tokens,
-            temperature=args.temperature,
-        )
+        try:
+            prediction = runner.generate(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                max_new_tokens=args.max_new_tokens,
+                temperature=args.temperature,
+            )
+        except Exception as e:
+            print(f"  [Warning] Generation failed for window {idx+1}: {e}")
+            prediction = f"[Error during generation: {str(e)}]"
 
         metrics = evaluator.evaluate_window(
             prediction=prediction,

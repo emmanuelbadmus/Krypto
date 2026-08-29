@@ -1,7 +1,7 @@
 """
 harness/models.py
 Modular LLM model runner interface supporting Hugging Face, Unsloth, PEFT LoRA,
-and API backends for forensic evaluation.
+and API backends for forensic evaluation with robust memory safety on MPS/CUDA/CPU.
 """
 
 import os
@@ -24,6 +24,7 @@ class HuggingFaceRunner(BaseModelRunner):
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self.model_name = model_name_or_path
         self.adapter_path = adapter_path
+        self.max_seq_length = max_seq_length
         
         # Determine device
         if torch.cuda.is_available():
@@ -66,7 +67,13 @@ class HuggingFaceRunner(BaseModelRunner):
         else:
             prompt_text = f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant:"
 
-        inputs = self.tokenizer(prompt_text, return_tensors="pt").to(self.device)
+        # Truncate to safe sequence length to prevent unbounded attention buffers
+        inputs = self.tokenizer(
+            prompt_text,
+            return_tensors="pt",
+            max_length=self.max_seq_length - max_new_tokens,
+            truncation=True,
+        ).to(self.device)
         input_len = inputs.input_ids.shape[1]
 
         gen_kwargs = {
@@ -79,14 +86,21 @@ class HuggingFaceRunner(BaseModelRunner):
         else:
             gen_kwargs["do_sample"] = False
 
-        with torch.no_grad():
-            outputs = self.model.generate(
-                **inputs,
-                **gen_kwargs
-            )
+        try:
+            with torch.inference_mode():
+                outputs = self.model.generate(
+                    **inputs,
+                    **gen_kwargs
+                )
+            gen_tokens = outputs[0][input_len:]
+            res = self.tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
+        finally:
+            if self.device == "mps":
+                torch.mps.empty_cache()
+            elif self.device == "cuda":
+                torch.cuda.empty_cache()
 
-        gen_tokens = outputs[0][input_len:]
-        return self.tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
+        return res
 
 
 class UnslothRunner(BaseModelRunner):
@@ -113,10 +127,10 @@ class UnslothRunner(BaseModelRunner):
             {"role": "user", "content": user_prompt},
         ]
         prompt_text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(prompt_text, return_tensors="pt").to("cuda" if torch.cuda.is_available() else "cpu")
+        inputs = self.tokenizer(prompt_text, return_tensors="pt", truncation=True, max_length=8192 - max_new_tokens).to("cuda" if torch.cuda.is_available() else "cpu")
         input_len = inputs.input_ids.shape[1]
 
-        with torch.no_grad():
+        with torch.inference_mode():
             outputs = self.model.generate(
                 **inputs,
                 max_new_tokens=max_new_tokens,

@@ -29,33 +29,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Clean Primary Data Paths
+# Clean Primary Paths
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-ARCHIVE_DIR = os.path.join(BASE_DIR, "archive", "legacy_raw_extractions")
+SPLITS_DIR = os.path.join(DATA_DIR, "splits")
+RAW_DB_DIR = os.path.join(DATA_DIR, "raw_database")
+DOCS_DIR = os.path.join(DATA_DIR, "reports_and_docs")
+ARCHIVE_DIR = os.path.join(BASE_DIR, "archive")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
-EVENTS_DB_PATH = os.path.join(DATA_DIR, "events.jsonl")
-GROUND_TRUTH_PATH = os.path.join(DATA_DIR, "ground_truth.csv")
+EVENTS_DB_PATH = os.path.join(RAW_DB_DIR, "events_db.jsonl")
+GROUND_TRUTH_PATH = os.path.join(RAW_DB_DIR, "ground_truth.csv")
 
 # Available Datasets
 DATASETS = {
-    "val_split": {
-        "name": "Date-Held-Out Validation Split (23 windows)",
-        "path": os.path.join(DATA_DIR, "val_split.jsonl"),
+    "val": {
+        "name": "Date-Held-Out Validation Benchmark (23 windows)",
+        "path": os.path.join(SPLITS_DIR, "val.jsonl"),
     },
     "train_augmented": {
         "name": "Primary Augmented Session Windows (113 windows)",
-        "path": os.path.join(DATA_DIR, "train_augmented.jsonl"),
+        "path": os.path.join(SPLITS_DIR, "full_augmented.jsonl"),
     },
-    "train_split": {
+    "train": {
         "name": "Training Split (90 windows)",
-        "path": os.path.join(DATA_DIR, "train_split.jsonl"),
+        "path": os.path.join(SPLITS_DIR, "train.jsonl"),
     },
     "unlabelled_archive": {
         "name": "Archived Unlabelled Test Windows (52 windows)",
-        "path": os.path.join(ARCHIVE_DIR, "unlabelled.jsonl"),
+        "path": os.path.join(ARCHIVE_DIR, "unlabelled_test_windows_52.jsonl"),
     }
 }
 
@@ -116,7 +119,7 @@ def get_system_status():
 
 
 @app.get("/api/windows")
-def get_windows(dataset: str = Query("val_split", description="Dataset identifier: val_split, train_augmented, train_split, unlabelled_archive")):
+def get_windows(dataset: str = Query("val", description="Dataset identifier: val, train_augmented, train, unlabelled_archive")):
     """Returns parsed timeline windows for UI exploration."""
     if dataset not in DATASETS:
         raise HTTPException(status_code=404, detail=f"Dataset '{dataset}' not found. Available: {list(DATASETS.keys())}")

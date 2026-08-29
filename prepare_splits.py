@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 prepare_splits.py
-Splits train_augmented.jsonl into train_split.jsonl and val_split.jsonl
+Splits data/splits/full_augmented.jsonl into data/splits/train.jsonl and data/splits/val.jsonl
 using date-held-out partitioning to prevent temporal data leakage.
 """
 
@@ -9,9 +9,9 @@ import json
 import os
 from collections import defaultdict
 
-INPUT_FILE = "data/train_augmented.jsonl"
-TRAIN_FILE = "data/train_split.jsonl"
-VAL_FILE = "data/val_split.jsonl"
+INPUT_FILE = "data/splits/full_augmented.jsonl"
+TRAIN_FILE = "data/splits/train.jsonl"
+VAL_FILE = "data/splits/val.jsonl"
 
 # Held-out dates selected for balanced representation of Direct, Absence, and AndroidAuto events
 VAL_DATES = {"2019-02-22", "2019-03-15", "2019-03-28", "2019-04-03"}
@@ -45,6 +45,7 @@ def main():
     print(f"Train samples ({len(set(get_date(x) for x in train_data))} dates): {len(train_data)}")
     print(f"Val samples   ({len(set(get_date(x) for x in val_data))} dates): {len(val_data)}")
 
+    os.makedirs(os.path.dirname(TRAIN_FILE), exist_ok=True)
     with open(TRAIN_FILE, "w", encoding="utf-8") as f:
         for item in train_data:
             f.write(json.dumps(item) + "\n")

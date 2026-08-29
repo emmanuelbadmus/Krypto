@@ -19,8 +19,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Fine-tune LLM for Forensic Auditing with Unsloth")
     parser.add_argument("--model_name", type=str, default="unsloth/gemma-2-2b-it",
                         help="Base model from Hugging Face / Unsloth (e.g. unsloth/gemma-2-2b-it, unsloth/gemma-2-9b-it, unsloth/Qwen2.5-14B-Instruct)")
-    parser.add_argument("--train_file", type=str, default="data/train_split.jsonl")
-    parser.add_argument("--val_file", type=str, default="data/val_split.jsonl")
+    parser.add_argument("--train_file", type=str, default="data/splits/train.jsonl")
+    parser.add_argument("--val_file", type=str, default="data/splits/val.jsonl")
     parser.add_argument("--output_dir", type=str, default="outputs_forensic_gemma_2b")
     parser.add_argument("--max_seq_length", type=int, default=8192)
     parser.add_argument("--epochs", type=int, default=3)
