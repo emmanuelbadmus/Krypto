@@ -1,0 +1,849 @@
+{
+  "summary": {
+    "total_windows_evaluated": 52,
+    "total_citations_emitted": 322,
+    "valid_citations": 311,
+    "hallucinated_citations": 11,
+    "overall_citation_precision": 0.9658385093167702,
+    "hallucination_rate": 0.034161490683229816,
+    "absence_handling_accuracy": 0.0,
+    "total_ground_truth_matches": 0,
+    "model_name": "models/gemma-4-E2B-it",
+    "adapter_path": null,
+    "eval_dataset": "xx/unseen_training_data/unlabelled.jsonl"
+  },
+  "detailed_windows": [
+    {
+      "window_index": 1,
+      "date": "2018-06-12",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2018-06-12:\n\n**Twitter Activity**\nThe user viewed or interacted with a specific Twitter post regarding the Letgo app and making money from selling unused items. This activity occurred at 17:43 [EVT-1a60d16e4e25] and was subsequently recorded or observed at 17:47 [EVT-9b72bc06ea09].\n\n*Note: The timestamps associated with these artifacts (1528839793000 and 1528840030000 Unix milliseconds) suggest that the content being referenced may have been server-synced content rather than a direct, real-time user action on the device.*",
+      "target": null,
+      "metrics": {
+        "total_citations": 2,
+        "valid_citations": 2,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 2,
+      "date": "2018-10-26",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2018-10-26:\n\n**Episode 1: Social Media Interaction**\n\n*   The user interacted with a Twitter-related artifact, which appears to be a tweet seen or posted. [EVT-a9668b712bee]",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 3,
+      "date": "2018-11-15",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for 2018-11-15:\n\n**Episode 1: Social Media Interaction**\n\n*   The user viewed or posted a tweet containing the text: \"b\"J\\x03k\\x01\\x0bOur latest report reveals the best times to reach millennial, GenX and Baby Boomer #consumers. Here's one thing we'll tell you -- they all have a different time pre\" [EVT-b86eea5bdfcc].\n    *   *Note: The timestamp associated with this artifact (created=1542287008000 unix_ms) is a server creation time, not necessarily the exact time the user performed the action on the device.*",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 4,
+      "date": "2018-11-29",
+      "prediction": "Based on the provided artifacts, here is the chronological reconstruction of the user's activity for November 29, 2018:\n\n### Episode 1: Twitter Communication (14:47 - 17:18)\n\nThis episode details a series of interactions occurring on the Twitter platform, involving direct messages.\n\n*   **14:47:** The user sent a Twitter direct message [EVT-df5a8427426d].\n*   **14:53:** The user received a Twitter direct message [EVT-48b5da5a61aa].\n*   **15:13:** The user sent a message on Snapchat [EVT-8dc3b9ca7961].\n*   **15:28:** The user sent a Twitter direct message [EVT-17cb5be90557].\n*   **15:30:** The user sent a Twitter direct message [EVT-bac94fb5ca6e].\n*   **16:12:** The user sent a Twitter direct message [EVT-f2c348a073d6].\n*   **16:57:** The user sent two separate Twitter direct messages [EVT-a1da60f82406] and [EVT-0084b04911aa].\n*   **17:18:** The user sent another Twitter direct message [EVT-31dc0ac1c5bb].\n\n***\n\n**Summary of",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 9,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 5,
+      "date": "2018-12-01",
+      "prediction": "Based on the extracted artifacts, here is the reconstructed chronological activity for the user on 2018-12-01:\n\n**Snapchat Communication**\nThe user sent a message to a contact named \"thisisdfir\" on Snapchat [EVT-69e3136fc1c8]. Shortly after, the user sent a follow-up message to the same contact regarding an issue with app icons and badges on the phone [EVT-2b8c9fcd5a6e].",
+      "target": null,
+      "metrics": {
+        "total_citations": 2,
+        "valid_citations": 2,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 6,
+      "date": "2018-12-03",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for 2018-12-03:\n\n**Episode 1: Social Media Interaction**\n\n*   The user viewed or posted a tweet containing the text: \"b\"J\\x03B\\xc1RoboKiller is the new app that not only blocks unwanted calls from telemarketers & scammers, but also puts Answer Bots to work. Waste spammers' time, drive them crazy, \". [EVT-6e430556d74d]\n\n*   *Note: The timestamp associated with this artifact (created=1543861751000 unix_ms) reflects when the content was created on the server, not necessarily when the user acted on the device.*",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 7,
+      "date": "2018-12-04",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for 2018-12-04:\n\n**Episode 1: Twitter Communication**\n*   The user sent a direct message on Twitter. [EVT-468860f3197b]",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 8,
+      "date": "2018-12-17",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2018-12-17:\n\n**Episode 1: Social Media Interaction**\n\n*   The user viewed or posted a tweet containing a specific message and links. This activity is evidenced by the artifact [EVT-da70dbb2cf55], which shows a record within the Twitter application's database, created at a timestamp corresponding to 1545095759000 milliseconds since the Unix epoch.",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 9,
+      "date": "2018-12-22",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2018-12-22:\n\n**Episode 1: Social Media Interaction**\n\n*   The user viewed or posted a tweet containing an image or content referencing \"Dangerously good looking men\" and included a link to a Twitter post from the user @Cernovich [EVT-e95d0d0cc2f4].\n    *   *Note: The creation timestamp for this data is 1545460945000 Unix milliseconds.*",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 10,
+      "date": "2018-12-28",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2018-12-28:\n\n**Episode 1: Social Media Interaction**\n\n*   The user viewed or posted a Twitter content. This is evidenced by the artifact `EVT-07a69557ea8e`, which shows a tweet seen or posted at 13:21 [EVT-07a69557ea8e]. The content of the tweet was: \"b'J\\x03BiSTOP! You, yeah you \\xe2\\x80\\x93 why aren\\xe2\\x80\\x99t you following me, T-Mobile CEO? Do you not like free stuff or something?I\\x08\\x01XII\\x11XI\\x11XI\\x11XI\\x11XI\\x11XXX'\".\n*   The data associated with this event was created on the server at 1546021269000 Unix milliseconds [EVT-07a69557ea8e].",
+      "target": null,
+      "metrics": {
+        "total_citations": 3,
+        "valid_citations": 3,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 11,
+      "date": "2019-01-05",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Episode 1: Twitter Communication (Morning)\n\nThe user engaged in a series of direct messages on Twitter between 08:31 and 09:06.\n\n*   At 08:31, the user sent a Twitter direct message [EVT-b6a4e888083b].\n*   At 08:32, the user received a Twitter direct message [EVT-adf598593ccb].\n*   At 08:33, the user sent another Twitter direct message [EVT-fefc4d812026].\n*   At 09:05, the user sent a Twitter direct message [EVT-87ff8b9997ba].\n*   At 09:06, the user received another Twitter direct message [EVT-50cc0842ba83].\n\n### Episode 2: Instagram Activity (Late Morning)\n\nThe user engaged with Instagram shortly after the Twitter activity, involving a video call and subsequent media interactions.\n\n*   At 09:16, the user initiated an Instagram message that was a video call event [EVT-00e340da59f9].\n*   At 09:17, the user sent an Instagram message containing media [EVT-f6737eca40dc].\n*   At 09:18, the user received an Instagram message containing media [EVT-",
+      "target": null,
+      "metrics": {
+        "total_citations": 7,
+        "valid_citations": 7,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 12,
+      "date": "2019-01-11",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for 2019-01-11:\n\n**Episode 1: Interaction with Twitter/News Promotion**\n\n*   At 14:01 (local time), the user viewed or posted a Twitter item containing a promotional message encouraging the download of the NYTimes application [EVT-9e379612578e].\n    *   *Note: The timestamp associated with the database entry (1547233288000 Unix milliseconds) is the creation time of the database record, which may reflect when the content was created on a server, not necessarily the exact time the user acted on the device.*",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 13,
+      "date": "2019-01-12",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-01-12:\n\n**Episode 1: Instagram Communication**\n*   The user sent an Instagram message with the content \"Last message.\" [EVT-b0ba47206cf8]",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 14,
+      "date": "2019-01-16",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-01-16:\n\n**Episode 1: Twitter Activity**\n\n1.  At 08:00 (America/New_York time), the user interacted with a Twitter post, either by seeing or posting content related to the tweet with the ID `<2467791>` [EVT-5aec36ab0634].\n2.  At 12:16 (America/New_York time), the user interacted with a different Twitter tweet, either by seeing or posting content related to the tweet with the ID `<1052157320732454913>` [EVT-9e7edb3f1d42].",
+      "target": null,
+      "metrics": {
+        "total_citations": 2,
+        "valid_citations": 2,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 15,
+      "date": "2019-01-18",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-01-18:\n\n### Twitter Direct Message Activity\n\nThe user engaged in a series of direct messages on Twitter, occurring between 15:59 and 16:05 (America/New_York timezone).\n\n**Episode 1: Initial Messaging (15:59)**\nThe user sent a direct message at 15:59. This action appears to involve a message directed to user ID `<2978888609>` [EVT-367f9c652c0b]. Simultaneously or immediately following, another direct message was logged, potentially from the recipient or a related interaction, referencing ID `<1068228364824178689>` [EVT-99794b4b3886].\n\n**Episode 2: Rapid Exchange (16:00 - 16:02)**\nA rapid sequence of direct messages occurred between 16:00 and 16:02, involving both user IDs:\n*   At 16:00, a direct message was sent to `<2978888609>` [EVT-38a05aee8fae] and another was sent to `<2978888609>` [EVT-7be3496075c3].\n*   At 16:01, a direct message was sent to `<10682",
+      "target": null,
+      "metrics": {
+        "total_citations": 4,
+        "valid_citations": 4,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 16,
+      "date": "2019-01-21",
+      "prediction": "Based on the provided artifacts, here is the chronological reconstruction of the user's activity:\n\n### Episode 1: Instagram Communication (Approx. 13:51 to 14:00)\n\nThe user engaged in a series of messages on Instagram, including text and media sharing, followed by a video call.\n\n*   At 13:51, the user sent the message, \"I\u2019m here.\" [EVT-e71b5631410c].\n*   At 13:51, the user responded with, \"Ok good. I'll go first.\" [EVT-451a2fa1e21e].\n*   At 13:52, the user sent a message containing media [EVT-77bcf14de89d].\n*   At 13:53, the user sent the message, \"Got it.\" [EVT-fd0256b2b70f].\n*   At 13:54, the user sent media [EVT-f52041e47675].\n*   At 13:55, the user initiated a video call [EVT-d696c55bc393].\n*   At 13:56, the user was involved in a video call [EVT-be5093160bc6].\n*   At 13:58, the user was involved in another video call [EVT-8dc86fe0b76",
+      "target": null,
+      "metrics": {
+        "total_citations": 8,
+        "valid_citations": 7,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.875,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 17,
+      "date": "2019-01-23",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for 2019-01-23:\n\n**Episode 1: Social Media Activity**\n\n*   The user viewed or posted a tweet containing the text: \"b\"J\\x03j-The most relax game, can't stop playing this!I\\x08\\x01XII\\x11XI\\x11XI\\x11XI\\x11XI\\x11XXX\"\" [EVT-00cc51fe19ed].\n    *   *Note: The timestamp associated with this data creation (1548240894000 unix_ms) is noted as potentially reflecting server-synced content, as per the provided provenance.*",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 18,
+      "date": "2019-02-02",
+      "prediction": "Based on the extracted artifacts, here is the chronological reconstruction of the user's activity for February 2, 2019:\n\n### Episode 1: Communication and Social Media Activity (Afternoon)\n\n1.  **Received a TextNow message:** The user received an incoming message from TextNow containing a reminder to contact a contact to ensure their number is not lost [EVT-783bb15f3b1e].\n    *   *Timestamp:* 10:14 AM (Local Time) [EVT-783bb15f3b1e]\n\n2.  **Viewed/Posted on Twitter (Initial Activity):** The user interacted with Twitter, viewing or posting content related to an internet outage and service issues [EVT-7735722570da].\n    *   *Timestamp:* 4:04 PM (Local Time) [EVT-7735722570da]\n\n3.  **Viewed/Posted on Twitter (Continued Activity):** Shortly after, the user interacted with Twitter again, posting or viewing another tweet [EVT-bf66b77b8fd4].\n    *   *Timestamp:* 4:07 PM (Local Time) [EVT-bf66b77b8fd4]\n\n### Episode 2: Social Media Activity (Late Evening)\n\n1.  **Viewed/Posted on Twitter (Recipe/Content Sharing):** The user interacted with Twitter, posting or viewing content related to working on a Super Bowl menu and sharing a recipe, noting the lack of photos from someone else",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 6,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 19,
+      "date": "2019-02-03",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Episode 1: Receiving a Text Message\nThe user received an incoming message from TextNow regarding a requirement to contact a contact soon to maintain their number [EVT-a68a8327cfb3].\n\n### Episode 2: Social Media Activity (Twitter)\nThe user engaged with Twitter multiple times, posting or viewing several tweets across the day.\n\n*   At 10:12 AM, the user saw or posted a tweet containing the text \"b\"J\\x03B2This is what I\\xe2\\x80\\x99m workin on https://t.co/Z42yjTrw32I\\t\\x08\\x01\\x12\\x02\\x08\\x02M\\x12\\x02J\\x02\\x11\\x11\\x12\\x0e\\x1c\\x02X\\xa8Lj\\rchrissyteigenj\\x10christine teigenXX\" [EVT-4853dfb7a199].\n*   At 10:23 AM, the user saw or posted another tweet containing the text \"b'J\\x03BlI\\xe2\\x80\\x99m making this today too! It\\xe2\\x80\\x99s the most delicious form of trash, I\\xe2\\x80\\x99m so proud of it https",
+      "target": null,
+      "metrics": {
+        "total_citations": 2,
+        "valid_citations": 2,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 20,
+      "date": "2019-02-04",
+      "prediction": "Based on the extracted artifacts, here is the reconstructed chronological activity for the user on 2019-02-04:\n\n### Episode 1: Early Morning Activity\n\nThe user engaged with Twitter early in the day.\n*   At 00:05, the user viewed or posted a tweet containing the text: \"just woke up excited for the superbowl !!!\" [EVT-10bffc38e730].\n\n### Episode 2: Mid-Morning Communication\n\nThe user received a message via the TextNow application.\n*   At 07:37, the user received an incoming message from support@enflick.com regarding the reassignment of a phone number [EVT-a4b5c9d54c57].\n\n### Episode 3: Afternoon Social Media Activity\n\nThe user continued interacting with Twitter, expressing feelings about nervousness.\n*   At 16:34, the user viewed or posted a tweet stating, \"I never loved water as much as my babies do\" [EVT-93e87b2f7c96].\n*   Shortly after, at 16:34, the user viewed or posted another tweet expressing nervousness: \"I really nervous for something but I forget what\" [EVT-1f15b549c900].\n*   At 16:35, the user viewed or posted a follow-up tweet about trying to figure out what they were nervous about: \"I will spend the rest of the day trying to figure out what I'm nervous about. Then I will remember it and be",
+      "target": null,
+      "metrics": {
+        "total_citations": 4,
+        "valid_citations": 4,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 21,
+      "date": "2019-02-05",
+      "prediction": "Based on the extracted artifacts, here is the chronological reconstruction of the user's activity for February 5, 2019:\n\n### Episode 1: Receiving a Text Message\nThe user received an incoming text message from a service named TextNow [EVT-308e8d8ecbcf].\n*   **Time:** 03:19 AM [EVT-308e8d8ecbcf]\n\n### Episode 2: Social Media Activity (Twitter)\nThe user engaged with Twitter multiple times throughout the day, posting or viewing several tweets.\n\n*   **1:01 PM:** The user viewed or posted a tweet referencing \"#BehindTheTweets\" and mentioning @chrissyteigen [EVT-e621842925ff].\n*   **1:10 PM:** The user viewed or posted another tweet referencing a statement about being an \"unelected but I'm here to serve\" [EVT-06629e188595].\n*   **1:21 PM:** The user viewed or posted a tweet referencing an \"Expose of CT in high school\" [EVT-a10bc4096b20].\n*   **1:35 PM:** The user viewed or posted a tweet referencing losing photos and addressing \"kelly\" [EVT-ea6e1cf1aa8f].\n*   **4:56 PM:** The user viewed or posted a tweet referencing a \"shot on iphone XR - New York for Chinese New Year\" [EVT-1bd87b7e00",
+      "target": null,
+      "metrics": {
+        "total_citations": 7,
+        "valid_citations": 6,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8571428571428571,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 22,
+      "date": "2019-02-06",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-02-06:\n\n### Episode 1: Morning Social Media Activity\n\nThe user engaged with Twitter in the morning, posting or viewing several tweets.\n*   At 08:11, the user posted or viewed a tweet containing the text: \"b\"J\\x03j'nope nope nope https://t.co/JfXKj7T9FII\\x08\\x02M\\x12\\x01J\\x05\\x12\\x10\\x12\\x10\\x12'j\\x17https://t.co/JfXKj7T9FIj9https://twitter.com/yahoo/status/1092563367955496960?s=21B\" [EVT-d1c0975018c2].\n*   Later, at 11:34, the user posted or viewed another tweet containing the text: \"b'J\\x03j\\x17https://t.co/FO0GfoEfnGI\\x08\\x02M\\x11J\\x05\\x11\\x11\\x12\\x17j\\x17https://t.co/FO0GfoEfnGjDhttps://twitter.com/chrissyteigen/status/10931860675224",
+      "target": null,
+      "metrics": {
+        "total_citations": 1,
+        "valid_citations": 1,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 23,
+      "date": "2019-02-07",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-02-07:\n\n### Twitter Activity Episode\n\nThe user was actively engaging with Twitter, posting or viewing various tweets throughout the day.\n\n1.  **00:22:** The user viewed or posted a tweet containing the text: \"J please stop making women look like such desperate dummies in teeth-whitening commercials\" [EVT-bd58fc1369da].\n2.  **00:45:** The user viewed or posted a tweet about buying special avocados at the 3rd street promenade farmers market [EVT-5409c2eccc97].\n3.  **07:30:** The user viewed or posted a tweet discussing the hypothetical movement of baguettes, including a link [EVT-8fdcbc0c0ceb].\n4.  **12:22:** The user viewed or posted a tweet related to playing together, including a link [EVT-4d1a8bbfc6d6].\n5.  **13:11:** The user viewed or posted a tweet commenting on a baguette being delicious or old [EVT-07a96ffabc4c].\n6.  **17:14:** The user viewed or posted a tweet expressing excitement about something sensational, asking others to watch and retweet, including a link [EVT-b61be6dafdac].\n7.  **19:05:** The user viewed or posted a tweet about Chrissy losing her voice and winning an Emmy,",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 6,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 24,
+      "date": "2019-02-08",
+      "prediction": "Here is the reconstructed chronological activity based on the provided artifacts:\n\n### Episode 1: Early Afternoon Social Media Activity (13:36 - 14:40)\n\nThe user engaged with Twitter multiple times, posting or viewing several tweets related to different topics.\n\n*   **13:36:** The user posted or viewed a tweet discussing new animations, mentioning a baguette and a snake [EVT-151679652c2d].\n*   **13:45:** The user posted or viewed a tweet expressing gratitude to \"@nbc\" [EVT-5fffcecb3971].\n*   **14:19:** The user viewed a tweet discussing a heated exchange regarding the Constitution and indicting the president's family members [EVT-414ba2a59f16].\n*   **14:40:** The user posted or viewed a tweet expressing strong emotion (\"OH MY FUCKING GOD JUST SAY 'CORRECT'\") [EVT-9faa26c3f042].\n\n### Episode 2: Late Afternoon Cooking/Food Discussion (19:37 - 21:50)\n\nThe user engaged in discussions related to cooking and food ingredients on Twitter.\n\n*   **19:37:** The user viewed a tweet where they mentioned asking a cooking question about cleaning cast iron skillets on an Instagram post and noting helpful comments [EVT-249fca158fb8].\n*   **21:39:** The user posted or viewed a tweet asking if there were coins in the loop [",
+      "target": null,
+      "metrics": {
+        "total_citations": 5,
+        "valid_citations": 5,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 25,
+      "date": "2019-02-09",
+      "prediction": "Based on the extracted artifacts, here is the chronological reconstruction of the user's activity for February 9, 2019:\n\n### Episode 1: Early Morning Social Media Activity\n\nThe user interacted with Twitter early in the day, posting or viewing several tweets.\n\n1.  **00:33:** The user posted or viewed a tweet mentioning \"jeselnik and paul @anthonyjeselnik\" [EVT-b4bc6c2e3ed6].\n2.  **02:43:** The user posted or viewed a tweet discussing a job posting or hiring strategy, referencing a link and the hashtag #DFIRI [EVT-934ef462d0f6].\n\n### Episode 2: Mid-Morning Discussion on Hiring/Job Postings\n\nThe user engaged in a discussion related to job advertisements and hiring practices on Twitter.\n\n1.  **07:33:** The user posted or viewed a tweet stating that partnering with HR to write a job posting and tweak the description was effective in attracting candidates [EVT-b030af2f8a64].\n2.  **07:33:** The user concurred with a previous point, stating that having the right job advertisement is key to attracting people [EVT-123a231d0020].\n3.  **07:32:** The user shared an experience as a hiring manager, noting that the issue was the person writing the job advertisement (HR member) did not know the job requirements [EVT-50dff6f306a7].\n\n### Episode",
+      "target": null,
+      "metrics": {
+        "total_citations": 5,
+        "valid_citations": 5,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 26,
+      "date": "2019-02-10",
+      "prediction": "Here is the reconstructed chronological activity based on the provided artifacts:\n\n### Episode 1: Early Morning Social Media Activity (00:12 - 15:11)\n\nThe user engaged with Twitter content, including viewing or posting several tweets.\n*   At 00:12, the user viewed or posted a tweet containing a link to TomTom and Instagram [EVT-22ea0591f67a].\n*   At 15:11, the user viewed or posted another tweet referencing jealousy and an Instagram link [EVT-3efd2e4edc22].\n\n### Episode 2: Mid-Afternoon Social Media Interactions (16:07 - 17:10)\n\nThe user continued interacting with Twitter, sharing personal thoughts, and engaging with specific content.\n*   At 16:07, the user viewed or posted a tweet expressing a question about embarrassment [EVT-53552076c5e5].\n*   At 16:10, the user viewed or posted a tweet about someone not knowing something [EVT-1ca272f9190a].\n*   At 16:12, the user viewed or posted a tweet stating an intention to write something down and give it to lawyers [EVT-292396cd58e4].\n*   At 17:02, the user posted a tweet about Grammys and someone achieving an EGOT [EVT-36eacecc9d4d].\n*   At 17:",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 6,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 27,
+      "date": "2019-02-11",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-02-11:\n\n### Episode 1: Social Media Interactions (Twitter)\n\nThe user engaged in several social media activities, including posting or viewing tweets related to various topics.\n\n1.  **12:37 PM:** The user posted or viewed a tweet mentioning plans to be in NYC from February 12th through March 1st and requesting bookings for shows [EVT-0d2c426434b3].\n2.  **2:54 PM:** The user posted or viewed a tweet declaring a quarantine on the household, describing the group as sickly people [EVT-c030d2dafab6].\n3.  **2:55 PM:** The user posted or viewed a tweet mentioning a suggestion to take Zicam, tagging several other users [EVT-49031758416e].\n4.  **3:10 PM:** The user posted or viewed a tweet expressing excitement about being a part of a show, including a link to a Twitter profile [EVT-64c30abb3cec].\n\n### Episode 2: Content Consumption and Commentary\n\nThe user continued engaging with content, including commentary on broader topics and sharing links.\n\n1.  **3:25 PM:** The user posted or viewed a tweet about Dreamers, referencing their role in the economy and community, and mentioning a new conference [EVT-4d058f2489e5].\n2.  **6:43 PM:** The",
+      "target": null,
+      "metrics": {
+        "total_citations": 5,
+        "valid_citations": 5,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 28,
+      "date": "2019-02-12",
+      "prediction": "Here is the reconstructed chronological activity of the user based on the provided artifacts:\n\n### Episode 1: Morning/Midday Social Media Engagement (Approx. 00:28 to 14:14)\n\nThe user engaged with several Twitter posts, including content related to art, travel, and current events.\n\n*   **00:28:** The user viewed or posted a tweet about a sand artist in America [EVT-80e35f34eb63].\n*   **08:39:** The user viewed or posted a tweet regarding Spirit Airlines dropping off passengers [EVT-d5c7aaa3f279].\n*   **13:50:** The user viewed or posted a tweet about a woman starring in Disney movies [EVT-161cf29d95a3].\n*   **14:00:** The user viewed or posted a tweet thanking people for kicking off #heartmonth with a fitness walk in San Francisco [EVT-499759c13582].\n*   **14:14:** The user viewed or posted a tweet about Abraham Lincoln's birthday [EVT-ee94f8b02aed].\n\n### Episode 2: Afternoon Content Creation/Interaction (Approx. 15:08 to 18:57)\n\nThe user interacted with content related to cooking, true crime, and personal social media status.\n\n*   **15:08:** The user viewed or posted a tweet asking for cooking tutorials on Instagram [EVT-a1b9b3",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 5,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8333333333333334,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 29,
+      "date": "2019-02-16",
+      "prediction": "Based on the provided system power events, the user's activity can be reconstructed chronologically as follows:\n\n**Battery Monitoring/Device Usage:**\nThe device experienced a sequence of battery level drops throughout the day, indicating continuous use or time passing [EVT-b05d071edf76, EVT-1822023cc164, EVT-b72f94521d2d, EVT-4bb89d3849f2, EVT-770a9527ff49, EVT-a9bda596ed39, EVT-29d3786e3b2d, EVT-ab6756b21ce1, EVT-2386b91fbb54, EVT-0e67fb3b2079, EVT-6c2ebb604136]. The battery level decreased from 90% at 00:45 to 80% by 23:10 [EVT-b05d071edf76, EVT-6c2ebb604136].\n\n**Summary of Timeline:**\n*   **00:45:** The battery level was 90% [EVT-b05d071edf76].\n*   **03:02:** The battery level dropped to 89% [EVT-1822023cc164].\n*   **05",
+      "target": null,
+      "metrics": {
+        "total_citations": 15,
+        "valid_citations": 15,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 30,
+      "date": "2019-02-17",
+      "prediction": "Based on the provided artifacts, here is the chronological reconstruction of the user's activity:\n\n### Battery Usage and System Activity\n\nThe device experienced a series of battery level fluctuations throughout the day, indicating periods of use or inactivity.\n\n*   **Morning/Early Day:** The battery level was 79% at 01:35 [EVT-29cc1407d8eb]. This was followed by a drop to 78% at 04:15 [EVT-7372b22eaa7b], and further to 77% at 06:43 [EVT-10d6241cc3d5].\n*   **Mid-Morning:** The battery level dropped to 76% at 08:31 [EVT-c4afe3422b49].\n*   **Late Morning/Midday:** The battery level was 75% at 11:00 [EVT-91c1255679d9].\n*   **Afternoon:** The battery level dropped to 74% at 13:20 [EVT-6d03bf323ea9].\n*   **Late Afternoon/Evening:** The battery level was 73% at 15:48 [EVT-7fddde3cb53e]. This was followed by a drop to 72% at 18:11 [EVT-8dbe53821889].\n*   **Night:** The battery level continued to",
+      "target": null,
+      "metrics": {
+        "total_citations": 8,
+        "valid_citations": 8,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 31,
+      "date": "2019-02-23",
+      "prediction": "Based on the provided artifacts, the user's activity consists solely of tracking the device's battery level over time.\n\n**Battery Monitoring Activity**\n\nThe user experienced a gradual decrease in battery level throughout the day, starting at 87% and ending at 76%.\n\n*   **Morning/Early Day:** The battery level was 87% at 00:29 [EVT-fedf75474665]. It dropped to 86% at 02:31 [EVT-e9289260d182], then 85% at 04:43 [EVT-3f797529c50d], and 84% at 06:40 [EVT-333343f9c2ab].\n*   **Mid-Day:** The battery level continued to decline, reaching 83% at 08:17 [EVT-2d5db05cf972], 82% at 10:01 [EVT-992a793a459d], and 81% at 12:05 [EVT-68f42412a5f1].\n*   **Afternoon/Evening:** The battery level continued to decrease, reaching 80% at 14:17 [EVT-d894e22a0983], 79% at 16:19 [EVT-a60140bf",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 8,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8888888888888888,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 32,
+      "date": "2019-02-24",
+      "prediction": "Based on the provided artifacts, here is the chronological reconstruction of the user's activity:\n\n### Power and System Activity\n\nThe device experienced a series of battery level fluctuations throughout the day, indicating continuous use or idle periods.\n\n*   **00:54:** The battery level was 75% [EVT-a8a2d936664d].\n*   **03:11:** The battery level dropped to 74% [EVT-edf448ff0eb3].\n*   **05:24:** The battery level dropped to 73% [EVT-3b1ea48f2e4c].\n*   **07:35:** The battery level dropped to 72% [EVT-6e2219879203].\n*   **09:22:** The battery level dropped to 71% [EVT-09aa83562266].\n*   **11:30:** The battery level dropped to 70% [EVT-069db08eae40].\n*   **13:24:** The battery level dropped to 69% [EVT-f161343bbeca].\n*   **15:10:** The battery level dropped to 68% [EVT-9220871da98c].\n*   **16:41:** The battery level dropped to 67% [EVT-e4bc51fc08",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 8,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8888888888888888,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 33,
+      "date": "2019-02-26",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Power and System Activity (Throughout the Day)\n\nThe device experienced a continuous sequence of power level drops, indicating usage throughout the day.\n\n*   **Morning/Early Day Power Drain:** The battery level dropped from 73% at 02:03 [EVT-98ad567194b3] to 72% at 04:01 [EVT-6a115ae95137], and further to 71% at 06:25 [EVT-1f58f026fbcc].\n*   **Mid-Morning Activity:** The battery level continued to decrease, reaching 69% at 08:00 [EVT-6b9976dbbc33], 68% at 08:31 [EVT-c5efb54e8e7a], and 67% at 08:47 [EVT-7ae8de96e56a].\n*   **Late Morning/Midday Usage:** The battery level continued to decline through the morning and early afternoon, reaching 66% at 09:04 [EVT-e199e7061cf3], 65% at 09:20 [EVT-0587c59e9a68], and 64% at 09:39 [EVT-45e5e105e04",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 8,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8888888888888888,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 34,
+      "date": "2019-03-01",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-03-01:\n\n### Battery Usage and System Activity\n\nThe logs primarily consist of system power events, indicating continuous device usage and battery drain throughout the day.\n\n*   **Morning Activity (02:10 to 10:18):** The device experienced a sequence of battery level drops, starting at 72% [EVT-3273af9a9af2] and gradually decreasing to 61% by 10:18 [EVT-92164af47606].\n*   **Midday Activity (10:39 to 13:32):** Battery level continued to decrease, dropping from 60% at 10:39 [EVT-2908130dbe24] to 51% at 13:32 [EVT-405b492c442a].\n*   **Afternoon Activity (13:51 to 17:20):** The battery level continued to decline, dropping from 50% at 13:51 [EVT-73a87084aba0] to 39% at 17:20 [EVT-2f76208e9fe7].\n*   **Evening Activity (18:08 to 22:47):** The battery level continued to decrease through the evening, reaching 35% by 22",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 6,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 35,
+      "date": "2019-03-02",
+      "prediction": "Based on the provided artifacts, the user's activity primarily consists of tracking the device's battery level over the course of the day.\n\n### Battery Monitoring Activity\n\nThe user experienced a gradual decrease in battery level throughout the day, starting at 34% and ending at 23%.\n\n*   **Morning/Early Day:** The battery level was 34% at 00:51 [EVT-237d1fc42c98]. This was followed by a drop to 33% at 02:32 [EVT-7011947aa3c3], and further to 32% at 04:23 [EVT-199fdcb9d620].\n*   **Mid-Day:** The battery level dropped to 31% at 06:40 [EVT-f6f95178da8c], and then to 30% at 08:50 [EVT-c653d650b1f1].\n*   **Afternoon:** The battery level continued to decrease, reaching 28% at 11:09 [EVT-14cd8c59e84d], 27% at 15:32 [EVT-eb0d5a8bbec8], and 26% at 17:33 [EVT-473ff4ef4765].\n*   **Evening:** The battery level dropped further to 25% at 18:3",
+      "target": null,
+      "metrics": {
+        "total_citations": 8,
+        "valid_citations": 8,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 36,
+      "date": "2019-03-03",
+      "prediction": "Based on the provided system power events, the user experienced a continuous period of device usage and subsequent battery drain throughout the day.\n\n**Battery Usage Timeline:**\n\n*   **Early Morning:** The battery level dropped from 22% at 00:23 [EVT-f4d169ee39ba] to 21% at 02:23 [EVT-6bff65ee2f2c].\n*   **Mid-Morning:** The battery level continued to decrease, reaching 20% at 04:18 [EVT-5d013019bc48], followed by a drop to 19% at 06:15 [EVT-c89ad19768ec].\n*   **Late Morning/Midday:** The battery level dropped further to 18% at 08:20 [EVT-5f2c7649784e], and then to 17% at 10:18 [EVT-c28fc4937cf3].\n*   **Afternoon:** The battery level continued to decline, reaching 16% at 12:35 [EVT-40009d5c1857].\n*   **Late Afternoon/Evening:** The battery level dropped to 15% at 15:13 [EVT-02770245b4f1], followed by a drop to 14% at 17:43 [EVT-cb80",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 8,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8888888888888888,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 37,
+      "date": "2019-03-08",
+      "prediction": "Based on the provided artifacts, the user's activity primarily consists of tracking the device's battery level over the course of the day.\n\n### Battery Monitoring Activity\n\nThe user experienced a gradual decrease in battery level throughout the day, starting at 69% and ending at 59%.\n\n*   **Early Morning:** The battery level was 69% at 00:49 [EVT-692043026508].\n*   **Morning:** The battery level dropped to 68% at 02:27 [EVT-c2b8c56734d2], then to 67% at 04:12 [EVT-69eac6b05e2b], and further to 66% at 06:03 [EVT-7098f6b01efe].\n*   **Late Morning/Midday:** The battery level dropped to 65% at 07:30 [EVT-2f7a76d95f8c], and then to 64% at 09:31 [EVT-642e675ed0ea].\n*   **Afternoon:** The battery level dropped to 63% at 12:18 [EVT-f58ed78f1ab5], and then to 62% at 15:01 [EVT-5e63850c1c4c].\n*   **Evening:** The battery level dropped to 6",
+      "target": null,
+      "metrics": {
+        "total_citations": 8,
+        "valid_citations": 8,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 38,
+      "date": "2019-03-09",
+      "prediction": "Based on the provided artifacts, the user's activity primarily consists of tracking the device's battery level over the course of the day.\n\n### Battery Monitoring Activity\n\nThe user experienced a gradual decrease in battery level throughout the day, starting at 57% and ending at 46%.\n\n*   **Morning/Early Day:** The battery started at 57% at 01:21 [EVT-2316bbbf8d5f]. It dropped to 56% by 03:30 [EVT-edb0dedb15fe].\n*   **Mid-Morning:** The battery dropped further to 55% by 06:58 [EVT-d4d19f92b2e2], and then to 54% by 08:44 [EVT-e170b7ff9417].\n*   **Late Morning/Noon:** The battery dropped to 53% by 10:26 [EVT-31011855aa92], and then to 52% by 12:11 [EVT-4ead291cc864].\n*   **Afternoon:** The battery dropped to 51% by 13:27 [EVT-0b88386bcbb5], and then to 50% by 15:36 [EVT-a7d9cc4cbe87].\n*   **Evening:** The battery dropped to 49% by 17",
+      "target": null,
+      "metrics": {
+        "total_citations": 8,
+        "valid_citations": 8,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 39,
+      "date": "2019-03-10",
+      "prediction": "Based on the provided artifacts, here is the chronological reconstruction of the user's activity for March 10, 2019:\n\n### Power and System Activity\n\nThe device experienced a series of battery level drops throughout the day, indicating continuous use [EVT-9f0c9b141f47, EVT-9c81cfc6fdf5, EVT-e2dd4db6ab32, EVT-1b3d74733fa6, EVT-53559ef53f59, EVT-bdaafe6ab289, EVT-b6a86bb064ce, EVT-7f7a57d6c46e, EVT-f3da645cf6d3, EVT-89fda0ff3374].\n\n*   **Morning/Early Day:** The battery level dropped from 45% at 01:30 [EVT-9f0c9b141f47] to 44% at 04:45 [EVT-9c81cfc6fdf5], and further to 43% at 07:00 [EVT-e2dd4db6ab32].\n*   **Mid-Morning:** The battery level continued to decrease, reaching 42% at 09:07 [EVT-1b3d74733fa6], and 41% at 11:30 [EVT",
+      "target": null,
+      "metrics": {
+        "total_citations": 14,
+        "valid_citations": 14,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 40,
+      "date": "2019-03-12",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-03-12:\n\n### Battery and System Activity (Morning/Daytime)\n\nThe device experienced a steady decline in battery level throughout the day, starting around 01:33 and ending at 22:40 [EVT-d8a62fe1f7e3, EVT-5c43f40a0e22, EVT-f92e2c693f58, EVT-944b7024aa1c, EVT-c21db76d2a68, EVT-5f4b2447c20b, EVT-3b78a911e8e4, EVT-1df0d7fa3345, EVT-4e2e75f9e13c].\n\n*   At 01:33, the battery level was 47% [EVT-d8a62fe1f7e3].\n*   The battery level dropped to 46% at 03:00 [EVT-5c43f40a0e22].\n*   The battery level dropped to 45% at 04:50 [EVT-f92e2c693f58].\n*   The battery level dropped to 44% at 06:46 [EVT-944b7024aa",
+      "target": null,
+      "metrics": {
+        "total_citations": 13,
+        "valid_citations": 12,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.9230769230769231,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 41,
+      "date": "2019-03-14",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n**Episode 1: Twitter Activity during the afternoon**\n\n1.  At 15:30, the user viewed or posted a Twitter tweet containing the text: \"Jtokay this is the funniest game I have ever played in my life https://t.co/7l61IaHojHI\". [EVT-20a3dc9d1424]\n2.  At 15:44, the user viewed or posted another Twitter tweet with the text: \"jyLooking forward to many future innovations by these bright developers in Singapore and Indonesia! https://t.co/FW9LNMjxeNI\". [EVT-4344279e92f3]\n\n**Episode 2: Twitter Activity late at night**\n\n1.  At 23:30, the user viewed or posted a Twitter tweet expressing devastation regarding reports from New Zealand, stating, \"Devastated by the reports out of New Zealand. The community in Christchurch is in our hearts, as are all affected by this horrific attack. I have decided to\". [EVT-05b96d89dc7f]",
+      "target": null,
+      "metrics": {
+        "total_citations": 3,
+        "valid_citations": 3,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 42,
+      "date": "2019-03-16",
+      "prediction": "Here is the reconstructed chronological activity of the user based on the provided artifacts:\n\n### Episode 1: Morning/Daytime Activity (Twitter and System Monitoring)\n\nThe user engaged with Twitter and experienced several system power events during the morning and early afternoon.\n\n1.  **00:29:** The user viewed or posted a tweet containing text about reading a cooking book and planning to cook potato dishes [EVT-8dc71679a2ac].\n2.  **01:28:** The device recorded a system power event, showing a battery level of 86% [EVT-0d26c09200e4].\n3.  **03:36:** The device recorded another system power event, showing a battery level of 85% [EVT-edc3d6243400].\n4.  **05:54:** The device recorded a system power event, showing a battery level of 84% [EVT-d46ce84a9160].\n5.  **07:48:** The device recorded a system power event, showing a battery level of 83% [EVT-8351eaffc6ba].\n6.  **09:59:** The device recorded a system power event, showing a battery level of 82% [EVT-90aa950aeec8].\n7.  **12:15:** The device recorded a system power event, showing a battery level of 81% [EVT-1595",
+      "target": null,
+      "metrics": {
+        "total_citations": 7,
+        "valid_citations": 6,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.8571428571428571,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 43,
+      "date": "2019-03-17",
+      "prediction": "Here is the reconstructed chronological activity based on the provided artifacts:\n\n### Power Management and System Activity\n\nThe user experienced a gradual decrease in battery level throughout the day, with several recorded power events [EVT-850deb3f40f5, EVT-7eedd869a040, EVT-1d456d7996f2, EVT-1ec98c4bb4e8, EVT-a65d9d7049fc].\n\n*   At 00:50, the battery level was 75% [EVT-850deb3f40f5].\n*   At 02:34, the battery level dropped to 74% [EVT-7eedd869a040].\n*   At 04:58, the battery level dropped to 73% [EVT-1d456d7996f2].\n*   At 07:07, the battery level dropped to 72% [EVT-1ec98c4bb4e8].\n*   At 09:24, the battery level dropped to 71% [EVT-a65d9d7049fc].\n*   At 12:17, the battery level was 70% [EVT-b1c4c9b82361].\n*   At 14:33, the battery level dropped to 69% [EVT-f",
+      "target": null,
+      "metrics": {
+        "total_citations": 12,
+        "valid_citations": 11,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.9166666666666666,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 44,
+      "date": "2019-03-18",
+      "prediction": "Here is the reconstructed chronological activity based on the provided artifacts:\n\n### Morning/Daytime Activity (Battery Drain and Social Media)\n\n**Battery Monitoring and Initial Activity:**\nThe device experienced a series of battery level drops throughout the morning and early afternoon [EVT-e6e4b21532fc, EVT-ad128978bc44, EVT-b7f3c74dbd0f, EVT-da3b9aa0eedf, EVT-cca9bdd067e7, EVT-eb08b5b135ee, EVT-d08b4c394f09, EVT-d495bd2f1adc, EVT-9410e8bfd375, EVT-389ee9868587, EVT-cdb16bd89f5b, EVT-aab737014db4, EVT-9c9f5a896927, EVT-eeee67b2a86a, EVT-c3d10c8163ee, EVT-7fb1b1bbb51c, EVT-c1b035f25486, EVT-2e378dce3614, EVT-c0adb77886b5, EVT-227c35bb4fbb, EVT-09d22adcc4c5,",
+      "target": null,
+      "metrics": {
+        "total_citations": 21,
+        "valid_citations": 21,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 45,
+      "date": "2019-03-20",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Power Management and System Activity (Morning to Evening)\n\nThe user experienced a gradual decrease in battery level throughout the day, starting at 93% and ending at 64%.\n\n*   **Morning Power Drain:** The battery level dropped from 93% at 02:10 [EVT-8ae930f4e4cc] to 92% at 04:21 [EVT-442b9442389e], and further to 91% at 06:33 [EVT-c4f1f1734afd].\n*   **Mid-Morning Activity:** The battery continued to decrease, reaching 90% at 07:26 [EVT-21cc2afabb34] and 89% at 08:20 [EVT-f9f113cffc24].\n*   **Late Morning/Midday:** The battery level dropped to 88% at 08:39 [EVT-ed1f77598773], followed by a steady decline through the late morning hours: 87% [EVT-d013d69978ea], 86% [EVT-5f87194f63fd], 85% [EVT-7f059627ce3d], 84% [EVT-f94bf4549",
+      "target": null,
+      "metrics": {
+        "total_citations": 10,
+        "valid_citations": 9,
+        "hallucinated_citations": 1,
+        "citation_precision": 0.9,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 46,
+      "date": "2019-03-21",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Episode 1: Early Morning Activity and System Monitoring (00:24 - 03:50)\n\nThe user was active on Twitter and the device was experiencing battery drain during this period.\n*   At 00:24, the user viewed or posted a tweet [EVT-23f0e7dbe203].\n*   At 01:15, the system recorded a power event with a battery level of 63% [EVT-da1849742f25].\n*   At 03:50, the system recorded another power event with a battery level of 62% [EVT-9ad56d359f4e].\n\n### Episode 2: Mid-Morning Activity and Continued System Monitoring (06:27 - 10:53)\n\nThe user continued to interact with Twitter, and the battery level steadily decreased.\n*   At 06:27, the system recorded a power event with a battery level of 61% [EVT-794ae4b1a824].\n*   At 07:43, the user viewed or posted a tweet [EVT-6f569805d6b1].\n*   At 08:22, the system recorded a power event with a battery level of 59% [EVT-e845cd20433b].\n*   At 08:",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 6,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 47,
+      "date": "2019-03-22",
+      "prediction": "Based on the provided artifacts, here is the reconstructed chronological activity for the user on 2019-03-22:\n\n### Battery Drain/Usage Period (Morning to Afternoon)\n\nThe device experienced a steady decrease in battery level throughout the day, starting at 40% and ending at 18%.\n\n*   **Morning Activity:** The battery level dropped from 40% at 01:42 [EVT-5ca1b5f416be] to 39% at 03:50 [EVT-040d09356618]. This was followed by further drops at 06:00 [EVT-319093511d85], 07:26 [EVT-0c5091470e02], and 08:09 [EVT-c15bb50d2c69].\n*   **Mid-Morning/Late Morning:** The battery continued to drain, reaching 35% by 08:41 [EVT-30aff361ddff], 34% by 09:16 [EVT-313fd6c9caa5], and 33% by 09:55 [EVT-9cdd8214bc29].\n*   **Midday/Afternoon:** The battery level continued to decline, reaching 28% by 12:48 [EVT-d796c14e75e5],",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 9,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 48,
+      "date": "2019-03-23",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Episode 1: Early Morning Activity and Power Monitoring\n\nThe user was active on Twitter and experienced several battery level drops during the early morning hours.\n\n*   **00:18:** The user viewed or posted a tweet mentioning seared scallops and tagging other users [EVT-7863104af72d].\n*   **00:39:** The device recorded a system power event, showing the battery level at 16% [EVT-5a76d47a2cab].\n*   **03:13:** The device recorded a system power event, showing the battery level at 15% [EVT-6b6a0920850b].\n*   **06:16:** The device recorded a system power event, showing the battery level at 14% [EVT-8fb7c7236a64].\n\n### Episode 2: Mid-Morning Activity and Power Monitoring\n\nThe user continued to interact with Twitter and the device experienced further battery drain.\n\n*   **08:50:** The device recorded a system power event, showing the battery level at 13% [EVT-c1700158ba97].\n*   **11:03:** The device recorded a system power event, showing the battery level at 12% [EVT-b5056548825e].\n*   **12:45:** The device recorded a system power",
+      "target": null,
+      "metrics": {
+        "total_citations": 6,
+        "valid_citations": 6,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 49,
+      "date": "2019-03-24",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Morning Activity (Approx. 00:06 to 09:33)\n\n*   **00:06:** The user viewed or posted a tweet containing text related to \"coachbrucepearl\" and \"AuburnMBB\" [EVT-d35f50f51d2a].\n*   **00:42:** The device reported a system power event, showing a battery level of 6% [EVT-68af79e90f6a].\n*   **02:15:** The device reported a system power event, showing a battery level of 5% [EVT-055836e2a8df].\n*   **03:39:** The device reported a system power event, showing a battery level of 4% [EVT-b403e811209a].\n*   **05:07:** The device reported a system power event, showing a battery level of 3% [EVT-15a419bd2a3a].\n*   **06:30:** The device reported a system power event, showing a battery level of 2% [EVT-79d900d43bf0].\n*   **09:33:** The user viewed or posted a tweet containing text about \"chrissyteigen recipes\" and cheese [EVT-a0aa89e8f73d].\n\n### Afternoon/Evening",
+      "target": null,
+      "metrics": {
+        "total_citations": 7,
+        "valid_citations": 7,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 50,
+      "date": "2019-03-26",
+      "prediction": "Here is the reconstructed chronological activity based on the provided artifacts:\n\n### Morning Activity (Approx. 00:22 - 10:32)\n\n**Social Media Interaction:**\n*   The user viewed or posted a tweet containing a link, referencing a comment on Jezebel [EVT-c57e5c9f7f74].\n*   The user viewed or posted another tweet containing a link [EVT-d20668b9c8bf].\n\n**System Activity (Battery Drain):**\n*   The device experienced a battery level drop from 94% to 93% [EVT-fcdc42ec9fd2].\n*   The battery level dropped further to 92% [EVT-3d1dbfeb6575].\n*   The battery level dropped to 91% [EVT-0a755d45af1a].\n*   The battery level dropped to 90% [EVT-f73bfb56e117].\n*   The battery level dropped to 89% [EVT-309dd607b6fa].\n*   The battery level dropped to 88% [EVT-420f4af74e06].\n*   The battery level dropped to 87% [EVT-1e5693721d0b].\n*   The battery level dropped to 86% [EVT-1c984030ca73].\n*   The battery level dropped to",
+      "target": null,
+      "metrics": {
+        "total_citations": 10,
+        "valid_citations": 10,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 51,
+      "date": "2019-03-27",
+      "prediction": "Here is the chronological reconstruction of the user's activity based on the provided artifacts:\n\n### Morning Activity (Approx. 01:29 - 10:44)\n\n**Twitter Interaction:**\n*   The user viewed or posted a tweet containing text about \"there is a lot happening\" [EVT-0404333e48b4].\n*   The user posted a tweet asking a question about a recipe (\"fried green tomatoes or baked 'fried' green tomatoes\") [EVT-7f0ace30ed81].\n*   The user posted another tweet expressing sensitivity [EVT-32d378d9e521].\n*   The user posted a tweet about a \"crab cake sandwich with secret sauce\" [EVT-b6055e7ec0c6].\n*   The user posted a tweet about the website being hard work [EVT-d0d01508e53c].\n*   The user posted a tweet about voting \"NO on prop: slicingbagels\" [EVT-990e75ba2763].\n*   The user posted a tweet about \"caesar shishitos\" [EVT-5e52112b2b31].\n*   The user posted a tweet about \"yeah it's on the floor\" [EVT-c782eadc9664].\n*   The user posted a tweet about making green things [EVT-7581e1231364].\n\n**Messaging Activity:**\n*   The",
+      "target": null,
+      "metrics": {
+        "total_citations": 9,
+        "valid_citations": 9,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    },
+    {
+      "window_index": 52,
+      "date": "2019-03-29",
+      "prediction": "Here is the reconstructed chronological activity of the user based on the provided artifacts:\n\n### Morning Activity (Approx. 00:56 to 12:08)\n\n*   **00:56:** The user viewed or posted a tweet containing a message about seeing \"mommy dead and dearest\" and thanking @TheActOnHulu [EVT-571a207afb5b].\n*   **01:20:** The device recorded a system power event while the battery was at 95% [EVT-43286e5e9be1].\n*   **03:04:** The device recorded a system power event while the battery was at 94% [EVT-4d7de720e5b8].\n*   **05:30:** The device recorded a system power event while the battery was at 93% [EVT-08d792624481].\n*   **07:25:** The device recorded a system power event while the battery was at 92% [EVT-d2cd9fe52c21].\n*   **08:36:** The device recorded a system power event while the battery was at 91% [EVT-1dc6f75c3935].\n*   **09:30:** The device recorded a system power event while the battery was at 90% [EVT-a8437e1988f5].\n*   **10:2",
+      "target": null,
+      "metrics": {
+        "total_citations": 7,
+        "valid_citations": 7,
+        "hallucinated_citations": 0,
+        "citation_precision": 1.0,
+        "pred_has_absence_reasoning": false,
+        "absence_handled_correctly": false,
+        "matched_ground_truth_count": 0,
+        "matched_gt_ids": []
+      }
+    }
+  ]
+}

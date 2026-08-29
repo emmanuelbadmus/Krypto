@@ -12,7 +12,7 @@ class BaseModelRunner(ABC):
     """Abstract base class for all LLM inference runners in the harness."""
 
     @abstractmethod
-    def generate(self, system_prompt: str, user_prompt: str, max_new_tokens: int = 1024, temperature: float = 0.1) -> str:
+    def generate(self, system_prompt: str, user_prompt: str, max_new_tokens: int = 512, temperature: float = 0.1) -> str:
         """Generates the forensic activity reconstruction text for a given prompt."""
         pass
 
@@ -38,7 +38,7 @@ class HuggingFaceRunner(BaseModelRunner):
         
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name_or_path,
-            torch_dtype=torch_dtype if self.device != "cpu" else torch.float32,
+            dtype=torch_dtype if self.device != "cpu" else torch.float32,
             device_map="auto" if self.device == "cuda" else None,
             trust_remote_code=True,
         )
@@ -52,7 +52,7 @@ class HuggingFaceRunner(BaseModelRunner):
 
         self.model.eval()
 
-    def generate(self, system_prompt: str, user_prompt: str, max_new_tokens: int = 1024, temperature: float = 0.1) -> str:
+    def generate(self, system_prompt: str, user_prompt: str, max_new_tokens: int = 512, temperature: float = 0.1) -> str:
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -69,13 +69,20 @@ class HuggingFaceRunner(BaseModelRunner):
         inputs = self.tokenizer(prompt_text, return_tensors="pt").to(self.device)
         input_len = inputs.input_ids.shape[1]
 
+        gen_kwargs = {
+            "max_new_tokens": max_new_tokens,
+            "pad_token_id": self.tokenizer.eos_token_id,
+        }
+        if temperature > 0:
+            gen_kwargs["temperature"] = temperature
+            gen_kwargs["do_sample"] = True
+        else:
+            gen_kwargs["do_sample"] = False
+
         with torch.no_grad():
             outputs = self.model.generate(
                 **inputs,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature if temperature > 0 else None,
-                do_sample=temperature > 0,
-                pad_token_id=self.tokenizer.eos_token_id,
+                **gen_kwargs
             )
 
         gen_tokens = outputs[0][input_len:]
@@ -100,7 +107,7 @@ class UnslothRunner(BaseModelRunner):
         FastLanguageModel.for_inference(self.model)
         self.tokenizer = get_chat_template(self.tokenizer, chat_template=chat_template)
 
-    def generate(self, system_prompt: str, user_prompt: str, max_new_tokens: int = 1024, temperature: float = 0.1) -> str:
+    def generate(self, system_prompt: str, user_prompt: str, max_new_tokens: int = 512, temperature: float = 0.1) -> str:
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
@@ -131,4 +138,3 @@ def get_model_runner(model_name_or_path: str, adapter_path: str = None, backend:
             print(f"[get_model_runner] Unsloth initialization failed ({e}), falling back to HuggingFaceRunner.")
     
     return HuggingFaceRunner(model_name_or_path, adapter_path)
-
