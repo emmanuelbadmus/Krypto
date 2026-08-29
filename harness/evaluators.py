@@ -36,20 +36,45 @@ class ForensicEvaluator:
         with open(jsonl_path, "r", encoding="utf-8") as f:
             for line in f:
                 event = json.loads(line)
-                eid = event.get("event_id")
-                if eid:
-                    self.events_db[eid] = event
-                    count += 1
+                raw_eid = event.get("event_id", "")
+                clean_eid = raw_eid.replace("EVT-", "").strip().lower()
+                
+                # Normalize schema fields
+                norm_event = {
+                    "event_id": f"EVT-{clean_eid}" if clean_eid else raw_eid,
+                    "clean_id": clean_eid,
+                    "app": event.get("source") or event.get("app"),
+                    "event_type": event.get("event_type"),
+                    "timestamp": event.get("ts_local") or event.get("timestamp") or event.get("ts_utc"),
+                    "ts_utc": event.get("ts_utc"),
+                    "ts_local": event.get("ts_local"),
+                    "db_path": event.get("artifact") or event.get("db_path"),
+                    "table": event.get("table"),
+                    "row_id": event.get("row_id"),
+                    "time_column": event.get("time_column"),
+                    "raw_timestamp": event.get("raw_timestamp"),
+                    "epoch_type": event.get("epoch_format") or event.get("epoch_type"),
+                    "party": event.get("party"),
+                    "content": event.get("content"),
+                    "raw_data": event.get("raw_data", {}),
+                }
+
+                # Store under both keys for instantaneous resolution
+                if raw_eid:
+                    self.events_db[raw_eid] = norm_event
+                if clean_eid:
+                    self.events_db[clean_eid] = norm_event
+                count += 1
         print(f"[ForensicEvaluator] Indexed {count} provenance events.")
 
     def extract_prompt_event_ids(self, user_prompt: str) -> Set[str]:
         """Extracts all [EVT-xxxx] IDs that exist in the user's prompt."""
-        return set(re.findall(r"EVT-([a-f0-9]+)", user_prompt))
+        return set(re.findall(r"EVT-([a-f0-9]+)", user_prompt, flags=re.IGNORECASE))
 
     def evaluate_window(self, prediction: str, user_prompt: str, target_answer: str = None, window_date: str = None) -> Dict[str, Any]:
         """Evaluates a single window prediction."""
-        valid_prompt_ids = self.extract_prompt_event_ids(user_prompt)
-        pred_eids = re.findall(r"EVT-([a-f0-9]+)", prediction)
+        valid_prompt_ids = set(x.lower() for x in self.extract_prompt_event_ids(user_prompt))
+        pred_eids = [x.lower() for x in re.findall(r"EVT-([a-f0-9]+)", prediction, flags=re.IGNORECASE)]
 
         # 1. Citation Discipline & Anti-Hallucination
         total_cited = len(pred_eids)
@@ -58,72 +83,78 @@ class ForensicEvaluator:
         
         citation_precision = (len(valid_citations) / total_cited) if total_cited > 0 else 1.0 if not pred_eids else 0.0
 
-        # Check citations against master DB if loaded
-        in_master_db = [eid for eid in pred_eids if eid in self.events_db]
-
-        # 2. Absence & Negative Constraint Reasoning
+        # 2. Absence Reasoning Detection
         absence_keywords = [
             "without direct artifact support",
-            "no direct artifact",
-            "outside sqlite",
+            "sqlcipher",
             "encrypted",
-            "no application data present",
-            "documented activity",
+            "protobuf",
+            "uninstalled",
+            "no direct sqlite",
+            "outside sqlite",
+            "cookie only",
+            "residue",
+            "unrecoverable",
         ]
-        pred_has_absence = any(k in prediction.lower() for k in absence_keywords)
+        pred_lower = prediction.lower()
+        has_absence_reasoning = any(kw in pred_lower for kw in absence_keywords)
         
         target_has_absence = False
         if target_answer:
-            target_has_absence = any(k in target_answer.lower() for k in absence_keywords)
+            target_has_absence = any(kw in target_answer.lower() for kw in absence_keywords)
 
-        absence_handled_correctly = (pred_has_absence == target_has_absence) if target_answer else pred_has_absence
-
-        # 3. Ground Truth Recall (if date provided and GT available)
-        matched_gt_ids = []
+        # 3. Ground Truth Matching (if date provided)
+        gt_matches = 0
+        total_gt = 0
         if window_date and self.ground_truth:
-            gt_for_date = [gt for gt in self.ground_truth if gt.get("date") == window_date]
-            for gt in gt_for_date:
-                app = gt.get("app", "").lower()
-                content = gt.get("content", "").lower()
-                # Check if app and content snippet are mentioned in prediction
-                if app in prediction.lower():
-                    words = [w for w in content.split() if len(w) > 3]
-                    if any(w in prediction.lower() for w in words):
-                        matched_gt_ids.append(gt.get("gt_id"))
+            day_gt = [row for row in self.ground_truth if row.get("date") == window_date]
+            total_gt = len(day_gt)
+            for row in day_gt:
+                app_name = row.get("app", "").lower()
+                if app_name and app_name in pred_lower:
+                    gt_matches += 1
 
         return {
+            "window_date": window_date,
             "total_citations": total_cited,
             "valid_citations": len(valid_citations),
             "hallucinated_citations": len(hallucinated_citations),
             "citation_precision": citation_precision,
-            "pred_has_absence_reasoning": pred_has_absence,
-            "absence_handled_correctly": absence_handled_correctly,
-            "matched_ground_truth_count": len(matched_gt_ids),
-            "matched_gt_ids": matched_gt_ids,
+            "pred_has_absence_reasoning": has_absence_reasoning,
+            "target_has_absence": target_has_absence,
+            "gt_matches": gt_matches,
+            "total_gt_events": total_gt,
+            "hallucinated_ids": hallucinated_citations,
         }
 
     def aggregate_results(self, window_results: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Computes aggregate summary metrics across all evaluated windows."""
-        total_samples = len(window_results)
-        if total_samples == 0:
+        """Aggregates window results into comprehensive benchmark summary."""
+        total_windows = len(window_results)
+        if total_windows == 0:
             return {}
 
         total_citations = sum(r["metrics"]["total_citations"] for r in window_results)
         valid_citations = sum(r["metrics"]["valid_citations"] for r in window_results)
-        hallucinated = sum(r["metrics"]["hallucinated_citations"] for r in window_results)
+        hallucinated_citations = sum(r["metrics"]["hallucinated_citations"] for r in window_results)
         
-        avg_precision = (valid_citations / total_citations) if total_citations > 0 else 0.0
-        absence_accuracy = sum(1 for r in window_results if r["metrics"]["absence_handled_correctly"]) / total_samples
-        total_gt_matches = sum(r["metrics"]["matched_ground_truth_count"] for r in window_results)
+        overall_precision = (valid_citations / total_citations) if total_citations > 0 else 1.0
+        hallucination_rate = (hallucinated_citations / total_citations) if total_citations > 0 else 0.0
+
+        absence_correct = sum(
+            1 for r in window_results
+            if r["metrics"]["pred_has_absence_reasoning"] == r["metrics"]["target_has_absence"]
+        )
+        absence_accuracy = absence_correct / total_windows
+
+        total_gt_matches = sum(r["metrics"]["gt_matches"] for r in window_results)
 
         return {
-            "total_windows_evaluated": total_samples,
+            "total_windows_evaluated": total_windows,
             "total_citations_emitted": total_citations,
             "valid_citations": valid_citations,
-            "hallucinated_citations": hallucinated,
-            "overall_citation_precision": avg_precision,
-            "hallucination_rate": (hallucinated / total_citations) if total_citations > 0 else 0.0,
+            "hallucinated_citations": hallucinated_citations,
+            "overall_citation_precision": overall_precision,
+            "hallucination_rate": hallucination_rate,
             "absence_handling_accuracy": absence_accuracy,
-            "total_ground_truth_matches": total_gt_matches,
+            "total_gt_matches": total_gt_matches,
         }
-

@@ -3,152 +3,244 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Krypto — Mobile Forensic Reconstruction</title>
+  <title>Krypto — Forensic Reconstruction Workbench</title>
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- Top Navigation Deck -->
   <header class="navbar">
-    <div class="nav-brand">
-      <span class="brand-badge">KRYPTO</span>
-      <span class="brand-sub">Forensic Activity Reconstruction · Pixel 3 (Android 9)</span>
+    <div class="nav-left">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">KRYPTO</span>
+          <span class="brand-tag">FORENSIC AUDIT</span>
+        </div>
+      </div>
+
+      <div class="system-status-chip">
+        <span class="status-dot"></span>
+        <span id="status-db-info">SQLite Index: 30,609 events</span>
+      </div>
     </div>
 
-    <div class="nav-controls">
+    <!-- Central Interactive Controls -->
+    <div class="nav-center">
+      
       <!-- Dataset Selector -->
-      <div class="control-group">
-        <label class="control-label">Dataset</label>
-        <select id="select-dataset" class="select-input">
-          <option value="unseen">Unseen Test Windows (52)</option>
-          <option value="val_split">Held-Out Validation (23)</option>
-          <option value="train_augmented">Augmented Sessions (113)</option>
+      <div class="control-unit">
+        <span class="control-label">Dataset</span>
+        <select id="select-dataset" class="custom-select">
+          <option value="val" selected>Held-Out Val Benchmark (23)</option>
+          <option value="train_augmented">Augmented Full Sessions (113)</option>
+          <option value="train">Training Split (90)</option>
+          <option value="unlabelled_archive">Archived Unlabelled (52)</option>
         </select>
       </div>
 
-      <!-- Window Navigator with Next/Prev Chevrons -->
-      <div class="control-group">
-        <label class="control-label">Window</label>
-        <div class="window-stepper">
-          <button id="btn-prev-window" class="btn-icon" title="Previous Window">‹</button>
-          <select id="select-window" class="select-input window-select">
-            <!-- Populated dynamically -->
+      <!-- Window Navigator with Next/Prev Stepper -->
+      <div class="control-unit window-navigator">
+        <span class="control-label">Timeline Window</span>
+        <div class="stepper-box">
+          <button id="btn-prev-window" class="stepper-btn" title="Previous Window (Left Arrow)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <select id="select-window" class="stepper-select">
+            <!-- Dynamically populated -->
           </select>
-          <button id="btn-next-window" class="btn-icon" title="Next Window">›</button>
+          <button id="btn-next-window" class="stepper-btn" title="Next Window (Right Arrow)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
       </div>
 
       <!-- Model Selector -->
-      <div class="control-group">
-        <label class="control-label">Model</label>
-        <select id="select-model" class="select-input">
-          <option value="models/gemma-4-E2B-it">google/gemma-4-E2B-it (Local 131k)</option>
+      <div class="control-unit">
+        <span class="control-label">LLM Model</span>
+        <select id="select-model" class="custom-select">
+          <option value="models/gemma-4-E2B-it" selected>google/gemma-4-E2B-it (Local 131k)</option>
           <option value="unsloth/gemma-2-2b-it">unsloth/gemma-2-2b-it</option>
           <option value="Qwen/Qwen2.5-14B-Instruct">Qwen/Qwen2.5-14B-Instruct</option>
           <option value="meta-llama/Llama-3.1-8B-Instruct">meta-llama/Llama-3.1-8B-Instruct</option>
         </select>
       </div>
 
-      <!-- Run Button -->
-      <button id="btn-run-eval" class="btn-run">
-        <svg id="run-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="nav-right">
+      <button id="btn-run-eval" class="btn-primary">
+        <svg id="run-icon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
         <span id="run-text">Evaluate Window</span>
+        <kbd class="kbd-shortcut">⌘↵</kbd>
       </button>
 
-      <button id="btn-export" class="btn-ghost" title="Export JSON Audit Report">
+      <button id="btn-export" class="btn-secondary" title="Export JSON Forensic Audit Report">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
       </button>
     </div>
   </header>
 
-  <!-- Main Split Forensic Workspace -->
-  <main class="workspace">
+  <!-- Main Split Workspace -->
+  <main class="workbench-layout">
     
-    <!-- Left Column: Raw Artifacts -->
-    <section class="pane left-pane">
-      <div class="pane-header">
-        <div class="pane-title-group">
-          <span class="pane-title">Extracted Evidence Records</span>
+    <!-- LEFT PANEL: Extracted Artifacts & SQLite Provenance -->
+    <section class="panel left-panel">
+      <div class="panel-header">
+        <div class="panel-header-left">
+          <h2 class="panel-title">Extracted Evidence Records</h2>
           <span id="artifact-count" class="badge-count">0 events</span>
         </div>
-        <input type="text" id="artifact-search" placeholder="Search events..." class="search-input">
+        <div class="search-box">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="artifact-search" placeholder="Search payload, app, or ID..." class="search-input">
+        </div>
       </div>
 
-      <div id="artifacts-container" class="pane-scroll">
+      <div id="artifacts-container" class="panel-body custom-scroll">
         <!-- Rendered dynamically -->
       </div>
     </section>
 
-    <!-- Right Column: Audit Scorecard & Timeline Reconstruction -->
-    <section class="pane right-pane">
+    <!-- RIGHT PANEL: Forensic Reconstruction & Ground-Truth Diff -->
+    <section class="panel right-panel">
       
-      <!-- Top Audit Metrics Bar -->
-      <div class="audit-summary-bar">
-        <div class="audit-stat">
-          <span class="stat-lbl">Citation Precision</span>
-          <span id="metric-precision" class="stat-val stat-emerald">--</span>
+      <!-- Top Scorecard Strip -->
+      <div class="scorecard-strip">
+        <div class="metric-card">
+          <span class="metric-lbl">Citation Precision</span>
+          <div class="metric-val-row">
+            <span id="metric-precision" class="metric-val val-emerald">--</span>
+            <span id="metric-prec-tag" class="metric-sub">0/0 Cited</span>
+          </div>
         </div>
-        <div class="audit-divider"></div>
-        <div class="audit-stat">
-          <span class="stat-lbl">Valid Citations</span>
-          <span id="metric-citations" class="stat-val">--</span>
+
+        <div class="metric-divider"></div>
+
+        <div class="metric-card">
+          <span class="metric-lbl">Absence Reasoning</span>
+          <div class="metric-val-row">
+            <span id="metric-absence" class="metric-val val-amber">--</span>
+            <span id="metric-absence-tag" class="metric-sub">Negative Evidence</span>
+          </div>
         </div>
-        <div class="audit-divider"></div>
-        <div class="audit-stat">
-          <span class="stat-lbl">Absence Reasoning</span>
-          <span id="metric-absence" class="stat-val stat-amber">--</span>
+
+        <div class="metric-divider"></div>
+
+        <div class="metric-card">
+          <span class="metric-lbl">Hallucination Risk</span>
+          <div class="metric-val-row">
+            <span id="metric-hallucinations" class="metric-val">0</span>
+            <span class="metric-sub">Phantom IDs</span>
+          </div>
         </div>
-        <div class="audit-divider"></div>
-        <div class="audit-stat">
-          <span class="stat-lbl">Hallucinations</span>
-          <span id="metric-hallucinations" class="stat-val">0</span>
+
+        <div class="metric-divider"></div>
+
+        <div class="view-mode-tabs">
+          <button id="tab-pred" class="view-tab active" data-tab="pred">Model Output</button>
+          <button id="tab-target" class="view-tab" data-tab="target">Expert Target</button>
+          <button id="tab-split" class="view-tab" data-tab="split">Side-by-Side</button>
         </div>
       </div>
 
-      <!-- Reconstruction Stream -->
-      <div class="pane-scroll reconstruction-scroll">
+      <!-- Main Reconstruction Views -->
+      <div class="panel-body custom-scroll reconstruction-body">
         
-        <div class="section-card">
-          <div class="section-card-header">
-            <span class="section-card-title">Reconstructed User Activity</span>
-            <span id="model-badge" class="badge-subtle">Gemma-4-E2B-it</span>
+        <!-- View 1: Model Prediction Output -->
+        <div id="view-pred-container" class="view-container active">
+          
+          <div class="section-box">
+            <div class="section-box-head">
+              <div class="head-title-wrap">
+                <span class="head-icon">⚡</span>
+                <span class="head-title">Reconstructed Chronological Timeline</span>
+              </div>
+              <span id="model-name-badge" class="model-badge">google/gemma-4-E2B-it</span>
+            </div>
+            <div id="timeline-body" class="timeline-content">
+              <div class="empty-state">
+                <p>Click <strong>Evaluate Window</strong> to run live model inference.</p>
+              </div>
+            </div>
           </div>
-          <div id="timeline-body" class="timeline-body">
-            <div class="empty-state">
-              <p>Select a window and click <strong>Evaluate Window</strong> to run model inference and verify forensic citations.</p>
+
+          <!-- Absence & Encrypted Store Findings Box -->
+          <div id="absence-box" class="section-box absence-box">
+            <div class="section-box-head">
+              <div class="head-title-wrap">
+                <span class="head-icon">🔒</span>
+                <span class="head-title text-amber">Documented Activity Without Direct Support (Absence Reasoning)</span>
+              </div>
+            </div>
+            <div id="absence-body" class="absence-content">
+              <p class="text-muted">No unrecoverable or encrypted apps documented in this window.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- View 2: Expert Ground Truth Target -->
+        <div id="view-target-container" class="view-container">
+          <div class="section-box expert-box">
+            <div class="section-box-head">
+              <div class="head-title-wrap">
+                <span class="head-icon">🎯</span>
+                <span class="head-title text-cyan">Expert Target Reconstruction (Ground Truth)</span>
+              </div>
+              <span class="model-badge badge-cyan">Gold Standard</span>
+            </div>
+            <div id="target-body" class="timeline-content">
+              <!-- Rendered dynamically -->
             </div>
           </div>
         </div>
 
-        <!-- Absence and Unrecoverable Findings Card -->
-        <div id="absence-card" class="section-card absence-card">
-          <div class="section-card-header">
-            <span class="section-card-title absence-title">Unrecoverable & Encrypted Activity Analysis</span>
+        <!-- View 3: Side by Side Diff -->
+        <div id="view-split-container" class="view-container split-view-grid">
+          <div class="split-column">
+            <div class="split-col-head">Model Inference</div>
+            <div id="split-pred-body" class="timeline-content split-content"></div>
           </div>
-          <div id="absence-body" class="absence-body">
-            <p class="text-muted">No missing or unrecoverable activity evaluated yet.</p>
+          <div class="split-column">
+            <div class="split-col-head">Expert Target</div>
+            <div id="split-target-body" class="timeline-content split-content"></div>
           </div>
         </div>
 
       </div>
+
     </section>
 
   </main>
 
-  <!-- Provenance Deep Inspector Modal -->
+  <!-- Deep SQLite Provenance Inspector Modal -->
   <div id="provenance-modal" class="modal-backdrop">
     <div class="modal-window">
-      <div class="modal-head">
-        <span id="modal-evt-id" class="modal-evt-tag">[EVT-...]</span>
-        <button id="modal-close" class="btn-close">&times;</button>
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <div class="modal-icon">🔍</div>
+          <div>
+            <div id="modal-evt-id" class="modal-evt-badge">[EVT-...]</div>
+            <div class="modal-sub">Deep SQLite Database Provenance Record</div>
+          </div>
+        </div>
+        <button id="modal-close" class="modal-close-btn">&times;</button>
       </div>
-      <div id="modal-content" class="modal-content">
-        <!-- Filled on click -->
+
+      <div id="modal-content" class="modal-body custom-scroll">
+        <!-- Rendered on click -->
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <!-- Toast Notification System -->
   <div id="toast-container" class="toast-container"></div>
 
   <script src="/static/app.js"></script>

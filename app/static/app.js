@@ -1,9 +1,10 @@
-// Krypto Forensic Workbench - Streamlined Client-side Logic
+// Krypto Forensic Reconstruction Workbench - Polished Interactive Client
 
-let currentDataset = "unseen";
+let currentDataset = "val";
 let windowsData = [];
 let currentWindowIndex = 0;
 let provenanceCache = {};
+let activeTab = "pred";
 
 document.addEventListener("DOMContentLoaded", () => {
   initWorkbench();
@@ -12,9 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function initWorkbench() {
   try {
+    const statusRes = await fetch("/api/status");
+    if (statusRes.ok) {
+      const statusData = await statusRes.json();
+      document.getElementById("status-db-info").textContent = `SQLite: ${statusData.indexed_events_count.toLocaleString()} events | ${statusData.ground_truth_count} GT`;
+    }
     await loadWindows(currentDataset);
   } catch (err) {
-    showToast(`Initialization failed: ${err.message}`, "error");
+    showToast(`Initialization error: ${err.message}`, "error");
   }
 }
 
@@ -39,20 +45,51 @@ function bindEvents() {
   document.getElementById("btn-run-eval").addEventListener("click", runEvaluation);
   document.getElementById("artifact-search").addEventListener("input", filterEvidence);
 
+  // Tab switching
+  document.querySelectorAll(".view-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      activeTab = tab.dataset.tab;
+
+      document.querySelectorAll(".view-container").forEach(c => c.classList.remove("active"));
+      if (activeTab === "pred") document.getElementById("view-pred-container").classList.add("active");
+      else if (activeTab === "target") document.getElementById("view-target-container").classList.add("active");
+      else if (activeTab === "split") document.getElementById("view-split-container").classList.add("active");
+    });
+  });
+
+  // Modal
   document.getElementById("modal-close").addEventListener("click", closeModal);
   document.getElementById("provenance-modal").addEventListener("click", (e) => {
     if (e.target.id === "provenance-modal") closeModal();
   });
 
   document.getElementById("btn-export").addEventListener("click", exportReport);
+
+  // Keyboard Shortcuts
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+
+    if (e.key === "ArrowLeft") {
+      if (currentWindowIndex > 0) selectWindow(currentWindowIndex - 1);
+    } else if (e.key === "ArrowRight") {
+      if (currentWindowIndex < windowsData.length - 1) selectWindow(currentWindowIndex + 1);
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      runEvaluation();
+    } else if (e.key === "Escape") {
+      closeModal();
+    }
+  });
 }
 
 async function loadWindows(dataset) {
   const selectEl = document.getElementById("select-window");
-  selectEl.innerHTML = `<option>Loading...</option>`;
+  selectEl.innerHTML = `<option>Loading windows...</option>`;
 
   try {
     const res = await fetch(`/api/windows?dataset=${dataset}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     windowsData = data.windows;
 
@@ -60,7 +97,7 @@ async function loadWindows(dataset) {
     windowsData.forEach((w, idx) => {
       const opt = document.createElement("option");
       opt.value = idx;
-      opt.textContent = `#${w.index + 1} · ${w.title || "Window"} (${w.event_count} events)`;
+      opt.textContent = `#${w.index + 1} · ${w.date || w.title} (${w.event_count} events)`;
       selectEl.appendChild(opt);
     });
 
@@ -80,15 +117,19 @@ function selectWindow(index) {
   document.getElementById("select-window").value = index;
   document.getElementById("artifact-count").textContent = `${windowObj.event_count} events`;
 
-  // Render left evidence pane
+  // Render left evidence records
   renderEvidence(windowObj.user_prompt);
 
-  // If window has ground truth target, render it initially, otherwise reset
+  // Render target answer if present
   if (windowObj.target_answer) {
-    renderReconstruction(windowObj.target_answer, windowObj.user_prompt, null);
+    renderTargetView(windowObj.target_answer, windowObj.user_prompt);
   } else {
-    resetReconstruction();
+    document.getElementById("target-body").innerHTML = `<div class="empty-state"><p>No ground-truth target for this unlabelled window.</p></div>`;
+    document.getElementById("split-target-body").innerHTML = `<div class="empty-state"><p>No target available.</p></div>`;
   }
+
+  // Reset or initialize prediction view
+  resetReconstruction();
 }
 
 function renderEvidence(userPrompt) {
@@ -121,18 +162,22 @@ function renderEvidence(userPrompt) {
       card.id = `evidence-${eid}`;
       card.dataset.eid = eid;
 
+      const appClass = getAppBadgeClass(app);
       const prov = provenanceMap[`EVT-${eid}`] || `data\\com.${app.toLowerCase()}\\... :: row_id :: ${eid}`;
 
       card.innerHTML = `
         <div class="card-top">
-          <div class="card-tags">
-            <span class="evt-id-tag">[EVT-${eid}]</span>
-            <span class="app-tag">${app}</span>
+          <div class="card-badges">
+            <span class="evt-badge">[EVT-${eid.substring(0, 8)}]</span>
+            <span class="app-badge ${appClass}">${app}</span>
           </div>
           <span class="card-time">${time}</span>
         </div>
-        <div class="card-payload">${escapeHtml(payload.substring(0, 160))}</div>
-        <div class="card-provenance">→ ${escapeHtml(prov)}</div>
+        <div class="card-payload">${escapeHtml(payload.substring(0, 180))}</div>
+        <div class="card-sqlite-meta">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+          <span>${escapeHtml(prov)}</span>
+        </div>
       `;
 
       card.addEventListener("click", () => inspectProvenance(eid));
@@ -143,6 +188,15 @@ function renderEvidence(userPrompt) {
   if (count === 0) {
     container.innerHTML = `<div class="empty-state"><p>No artifact records found in this window.</p></div>`;
   }
+}
+
+function getAppBadgeClass(app) {
+  const a = app.toLowerCase();
+  if (a.includes("twitter")) return "app-twitter";
+  if (a.includes("snapchat")) return "app-snapchat";
+  if (a.includes("sms") || a.includes("telephony")) return "app-sms";
+  if (a.includes("power") || a.includes("screen") || a.includes("system")) return "app-system";
+  return "app-default";
 }
 
 function filterEvidence(e) {
@@ -158,8 +212,7 @@ async function runEvaluation() {
 
   const btn = document.getElementById("btn-run-eval");
   const runText = document.getElementById("run-text");
-  const modelSelect = document.getElementById("select-model");
-  const selectedModel = modelSelect.value;
+  const selectedModel = document.getElementById("select-model").value;
 
   btn.disabled = true;
   runText.textContent = "Running Inference...";
@@ -172,7 +225,7 @@ async function runEvaluation() {
         model_name: selectedModel,
         system_prompt: windowObj.system_prompt,
         user_prompt: windowObj.user_prompt,
-        max_new_tokens: 512,
+        max_new_tokens: 350,
         temperature: 0.1,
         chat_template: selectedModel.includes("gemma") ? "gemma" : "chatml",
       }),
@@ -214,7 +267,8 @@ async function runEvaluation() {
 function renderReconstruction(text, userPrompt, metrics) {
   const timelineBody = document.getElementById("timeline-body");
   const absenceBody = document.getElementById("absence-body");
-  const validPromptIds = new Set((userPrompt.match(/EVT-([a-f0-9]+)/g) || []).map(s => s.replace("EVT-", "")));
+  const splitPredBody = document.getElementById("split-pred-body");
+  const validPromptIds = new Set((userPrompt.match(/EVT-([a-f0-9]+)/gi) || []).map(s => s.replace(/EVT-/i, "").toLowerCase()));
 
   const sections = text.split(/Documented activity without direct artifact support:/i);
   const directPart = sections[0].replace(/Reconstructed activity with artifact support:/i, "").trim();
@@ -222,22 +276,25 @@ function renderReconstruction(text, userPrompt, metrics) {
 
   // Render Direct Timeline
   timelineBody.innerHTML = "";
-  const lines = directPart.split("\n").filter(l => l.trim().startsWith("-") || l.trim().length > 0);
+  splitPredBody.innerHTML = "";
+  const lines = directPart.split("\n").filter(l => l.trim().length > 0);
 
   if (lines.length === 0) {
     timelineBody.innerHTML = `<div class="empty-state"><p>No direct activity reported.</p></div>`;
+    splitPredBody.innerHTML = `<div class="empty-state"><p>No direct activity reported.</p></div>`;
   } else {
     lines.forEach(l => {
+      const formatted = formatTimelineLine(l, validPromptIds);
+
       const row = document.createElement("div");
-      row.className = "timeline-entry-row";
-
-      const formatted = l.replace(/\[EVT-([a-f0-9]+)\]/g, (match, eid) => {
-        const isValid = validPromptIds.has(eid);
-        return `<span class="citation-badge ${isValid ? '' : 'invalid-badge'}" data-eid="${eid}">[EVT-${eid.substring(0, 8)}]</span>`;
-      });
-
+      row.className = "timeline-row";
       row.innerHTML = formatted;
       timelineBody.appendChild(row);
+
+      const splitRow = document.createElement("div");
+      splitRow.className = "timeline-row";
+      splitRow.innerHTML = formatted;
+      splitPredBody.appendChild(splitRow);
     });
   }
 
@@ -246,7 +303,7 @@ function renderReconstruction(text, userPrompt, metrics) {
   const absenceLines = absencePart.split("\n").filter(l => l.trim().startsWith("-"));
 
   if (absenceLines.length === 0) {
-    absenceBody.innerHTML = `<p class="text-muted">No unrecoverable activity recorded in this window.</p>`;
+    absenceBody.innerHTML = `<p class="text-muted">No unrecoverable or encrypted activity documented in this window.</p>`;
   } else {
     absenceLines.forEach(l => {
       const clean = l.replace(/^-/, "").trim();
@@ -265,29 +322,53 @@ function renderReconstruction(text, userPrompt, metrics) {
     });
   }
 
-  // Update Metrics
+  // Update Scorecard
   if (metrics) {
     document.getElementById("metric-precision").textContent = `${(metrics.citation_precision * 100).toFixed(0)}%`;
-    document.getElementById("metric-citations").textContent = `${metrics.valid_citations} / ${metrics.total_citations}`;
-    document.getElementById("metric-absence").textContent = metrics.pred_has_absence_reasoning ? "Flagged" : "None";
+    document.getElementById("metric-prec-tag").textContent = `${metrics.valid_citations}/${metrics.total_citations} Valid`;
+    document.getElementById("metric-absence").textContent = metrics.pred_has_absence_reasoning ? "Detected" : "None";
+    document.getElementById("metric-absence").className = `metric-val ${metrics.pred_has_absence_reasoning ? 'val-emerald' : 'val-amber'}`;
     document.getElementById("metric-hallucinations").textContent = metrics.hallucinated_citations;
-  } else {
-    const cited = (text.match(/EVT-([a-f0-9]+)/g) || []).map(s => s.replace("EVT-", ""));
-    const valid = cited.filter(e => validPromptIds.has(e));
-    const prec = cited.length > 0 ? (valid.length / cited.length) * 100 : 100;
-    
-    document.getElementById("metric-precision").textContent = `${prec.toFixed(0)}%`;
-    document.getElementById("metric-citations").textContent = `${valid.length} / ${cited.length}`;
-    document.getElementById("metric-absence").textContent = absenceLines.length > 0 ? "Flagged" : "None";
-    document.getElementById("metric-hallucinations").textContent = cited.length - valid.length;
+    document.getElementById("metric-hallucinations").className = `metric-val ${metrics.hallucinated_citations > 0 ? 'val-rose' : ''}`;
   }
 
-  // Attach hover and click interactions
   setupCitationListeners();
 }
 
+function renderTargetView(targetText, userPrompt) {
+  const targetBody = document.getElementById("target-body");
+  const splitTargetBody = document.getElementById("split-target-body");
+  const validPromptIds = new Set((userPrompt.match(/EVT-([a-f0-9]+)/gi) || []).map(s => s.replace(/EVT-/i, "").toLowerCase()));
+
+  targetBody.innerHTML = "";
+  splitTargetBody.innerHTML = "";
+
+  const lines = targetText.split("\n").filter(l => l.trim().length > 0);
+  lines.forEach(l => {
+    const formatted = formatTimelineLine(l, validPromptIds);
+
+    const row = document.createElement("div");
+    row.className = "timeline-row";
+    row.innerHTML = formatted;
+    targetBody.appendChild(row);
+
+    const splitRow = document.createElement("div");
+    splitRow.className = "timeline-row";
+    splitRow.innerHTML = formatted;
+    splitTargetBody.appendChild(splitRow);
+  });
+}
+
+function formatTimelineLine(line, validPromptIds) {
+  return line.replace(/\[EVT-([a-f0-9]+)\]/gi, (match, eid) => {
+    const clean = eid.toLowerCase();
+    const isValid = validPromptIds.has(clean);
+    return `<span class="citation-chip ${isValid ? '' : 'invalid-chip'}" data-eid="${clean}">[EVT-${clean.substring(0, 8)}]</span>`;
+  });
+}
+
 function setupCitationListeners() {
-  document.querySelectorAll(".citation-badge").forEach(badge => {
+  document.querySelectorAll(".citation-chip").forEach(badge => {
     const eid = badge.dataset.eid;
 
     badge.addEventListener("mouseenter", () => {
@@ -312,8 +393,8 @@ async function inspectProvenance(eid) {
   const modalTitle = document.getElementById("modal-evt-id");
   const modalContent = document.getElementById("modal-content");
 
-  modalTitle.textContent = `[EVT-${eid}] SQLite Provenance`;
-  modalContent.innerHTML = `<span class="text-muted">Loading SQLite provenance...</span>`;
+  modalTitle.textContent = `[EVT-${eid.toUpperCase()}]`;
+  modalContent.innerHTML = `<div class="empty-state"><p>Querying master SQLite index...</p></div>`;
   modal.classList.add("active");
 
   try {
@@ -324,7 +405,7 @@ async function inspectProvenance(eid) {
 
     const res = await fetch(`/api/provenance/${eid}`);
     if (!res.ok) {
-      modalContent.innerHTML = `<span style="color: var(--rose);">Event ID not found in database.</span>`;
+      modalContent.innerHTML = `<div style="color: var(--rose); padding: 20px 0;">Event ID not found in master SQLite database index.</div>`;
       return;
     }
 
@@ -332,19 +413,45 @@ async function inspectProvenance(eid) {
     provenanceCache[eid] = data;
     renderModalBody(data);
   } catch (err) {
-    modalContent.innerHTML = `<span style="color: var(--rose);">Query error: ${err.message}</span>`;
+    modalContent.innerHTML = `<div style="color: var(--rose);">Query error: ${err.message}</div>`;
   }
 }
 
 function renderModalBody(data) {
   document.getElementById("modal-content").innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:6px;">
-      <div><strong>App:</strong> ${data.app || "System / App"}</div>
-      <div><strong>Database:</strong> <span style="color: #A5B4FC;">${data.db_path || "N/A"}</span></div>
-      <div><strong>Table:</strong> ${data.table || "N/A"}</div>
-      <div><strong>Row ID:</strong> ${data.row_id || "N/A"}</div>
-      <div><strong>Raw Timestamp:</strong> ${data.raw_timestamp} (${data.epoch_type || "auto"})</div>
-      <div><strong>Normalized Time:</strong> ${data.timestamp || "N/A"}</div>
+    <div class="provenance-field-grid">
+      <div class="prov-cell">
+        <div class="prov-label">Application</div>
+        <div class="prov-value" style="color: var(--cyan); font-weight:700;">${data.app}</div>
+      </div>
+      <div class="prov-cell">
+        <div class="prov-label">Event Type</div>
+        <div class="prov-value">${data.event_type}</div>
+      </div>
+      <div class="prov-cell prov-cell-full">
+        <div class="prov-label">Database File Path</div>
+        <div class="prov-value" style="color: #A5B4FC;">${data.db_path}</div>
+      </div>
+      <div class="prov-cell">
+        <div class="prov-label">Table Name</div>
+        <div class="prov-value">${data.table}</div>
+      </div>
+      <div class="prov-cell">
+        <div class="prov-label">Row ID</div>
+        <div class="prov-value">${data.row_id}</div>
+      </div>
+      <div class="prov-cell">
+        <div class="prov-label">Normalized Local Time</div>
+        <div class="prov-value">${data.timestamp || "N/A"}</div>
+      </div>
+      <div class="prov-cell">
+        <div class="prov-label">Raw Epoch Timestamp</div>
+        <div class="prov-value">${data.raw_timestamp} (${data.epoch_type})</div>
+      </div>
+      <div class="prov-cell prov-cell-full">
+        <div class="prov-label">Decoded Payload / Content</div>
+        <div class="prov-payload-box">${escapeHtml(data.content || "(empty payload)")}</div>
+      </div>
     </div>
   `;
 }
@@ -356,14 +463,14 @@ function closeModal() {
 function resetReconstruction() {
   document.getElementById("timeline-body").innerHTML = `
     <div class="empty-state">
-      <p>Select a window and click <strong>Evaluate Window</strong> to generate timeline reconstruction.</p>
+      <p>Click <strong>Evaluate Window</strong> to run model inference.</p>
     </div>
   `;
   document.getElementById("absence-body").innerHTML = `
-    <p class="text-muted">No missing or unrecoverable activity evaluated yet.</p>
+    <p class="text-muted">No unrecoverable or encrypted activity documented in this window.</p>
   `;
   document.getElementById("metric-precision").textContent = "--";
-  document.getElementById("metric-citations").textContent = "--";
+  document.getElementById("metric-prec-tag").textContent = "0/0 Cited";
   document.getElementById("metric-absence").textContent = "--";
   document.getElementById("metric-hallucinations").textContent = "0";
 }
@@ -376,15 +483,15 @@ function exportReport() {
     window: windowObj.title,
     date: windowObj.date,
     precision: document.getElementById("metric-precision").textContent,
-    citations: document.getElementById("metric-citations").textContent,
     timeline: document.getElementById("timeline-body").innerText,
     absence: document.getElementById("absence-body").innerText,
+    target: windowObj.target_answer,
   };
 
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `audit_${windowObj.date || "window"}.json`;
+  a.download = `forensic_audit_${windowObj.date || "window"}.json`;
   a.click();
   showToast("Audit report exported as JSON", "success");
 }

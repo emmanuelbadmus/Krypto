@@ -111,6 +111,7 @@ def get_system_status():
         "device": "Google Pixel 3 (Android 9 Pie, PQ2A.190205.001)",
         "corpus": "Joshua Hickman Digital Corpora (2019-02-13 to 2019-04-06)",
         "indexed_events_count": len(evaluator.events_db),
+        "ground_truth_count": len(evaluator.ground_truth_events),
         "ground_truth_count": len(evaluator.ground_truth),
         "available_models": available_models,
         "available_adapters": adapters,
@@ -178,21 +179,27 @@ def get_windows(dataset: str = Query("val", description="Dataset identifier: val
 @app.get("/api/provenance/{event_id}")
 def get_provenance(event_id: str):
     """Deep inspects an event ID to return SQLite provenance row details."""
-    clean_id = event_id.replace("EVT-", "").lower()
-    event_data = evaluator.events_db.get(clean_id)
+    clean_id = event_id.replace("EVT-", "").strip().lower()
+    event_data = evaluator.events_db.get(clean_id) or evaluator.events_db.get(f"EVT-{clean_id}")
     if not event_data:
         raise HTTPException(status_code=404, detail=f"Event ID '[EVT-{clean_id}]' not found in indexed database.")
     
     return {
-        "event_id": f"EVT-{clean_id}",
-        "timestamp": event_data.get("timestamp"),
-        "epoch_type": event_data.get("epoch_type"),
+        "event_id": event_data.get("event_id") or f"EVT-{clean_id}",
+        "clean_id": clean_id,
+        "app": event_data.get("app") or "Unknown App",
+        "event_type": event_data.get("event_type") or "activity",
+        "timestamp": event_data.get("timestamp") or event_data.get("ts_local"),
+        "ts_utc": event_data.get("ts_utc"),
+        "ts_local": event_data.get("ts_local"),
+        "db_path": event_data.get("db_path") or "N/A",
+        "table": event_data.get("table") or "N/A",
+        "row_id": event_data.get("row_id") or "N/A",
+        "time_column": event_data.get("time_column") or "created",
         "raw_timestamp": event_data.get("raw_timestamp"),
-        "app": event_data.get("app"),
-        "artifact_type": event_data.get("artifact_type"),
-        "db_path": event_data.get("db_path"),
-        "table": event_data.get("table"),
-        "row_id": event_data.get("row_id"),
+        "epoch_type": event_data.get("epoch_type") or "unix_ms",
+        "party": event_data.get("party"),
+        "content": event_data.get("content") or "",
         "raw_data": event_data.get("raw_data", {}),
     }
 
