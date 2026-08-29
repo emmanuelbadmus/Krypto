@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forensic Activity Reconstruction Workbench</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation & Control Deck -->
+  <header class="top-nav">
+    <div class="brand-section">
+      <span class="brand-badge">Forensic Audit v1.0</span>
+      <div>
+        <div class="brand-title">Mobile Activity Reconstruction Workbench</div>
+        <div class="brand-subtitle">Google Pixel 3 (Android 9 Pie) · Joshua Hickman Corpus</div>
+      </div>
+    </div>
+
+    <div class="meta-stats">
+      <div class="stat-pill">
+        <span>Indexed Provenance:</span>
+        <strong id="stat-events">30,609 events</strong>
+      </div>
+      <div class="stat-pill">
+        <span>Ground Truth:</span>
+        <strong id="stat-gt">322 events</strong>
+      </div>
+    </div>
+
+    <div class="controls-deck">
+      <select id="select-dataset" class="select-control">
+        <option value="unseen">Unseen Test Windows (52 windows)</option>
+        <option value="val_split">Date-Held-Out Validation (23 windows)</option>
+        <option value="train_augmented">Augmented Dataset (113 windows)</option>
+      </select>
+
+      <select id="select-model" class="select-control">
+        <option value="models/gemma-4-E2B-it">google/gemma-4-E2B-it (Local 131k context)</option>
+        <option value="unsloth/gemma-2-2b-it">unsloth/gemma-2-2b-it</option>
+        <option value="Qwen/Qwen2.5-14B-Instruct">Qwen/Qwen2.5-14B-Instruct</option>
+        <option value="meta-llama/Llama-3.1-8B-Instruct">meta-llama/Llama-3.1-8B-Instruct</option>
+      </select>
+
+      <button id="btn-run-eval" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span>Run Evaluation</span>
+      </button>
+
+      <button id="btn-export" class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span>Export Report</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Window Navigation Track -->
+  <div class="window-track">
+    <span class="track-label">Select Window:</span>
+    <div id="window-pills" class="window-pills">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Main Dual-Pane Forensic Workspace -->
+  <main class="workspace-grid">
+    
+    <!-- Left Pane: Extracted SQLite Artifacts & Provenance -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>EXTRACTED ARTIFACTS & PROVENANCE</span>
+          <span id="artifact-count-chip" class="count-chip">0 events</span>
+        </div>
+        <input type="text" id="artifact-search" placeholder="Filter by EVT ID, app, keyword..." class="select-control" style="width: 220px; padding: 4px 8px;">
+      </div>
+
+      <div id="artifacts-list" class="panel-body">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- Right Pane: Reconstruction & Verification Scorecard -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>FORENSIC TIMELINE RECONSTRUCTION</span>
+          <span id="eval-status-chip" class="count-chip" style="color: var(--emerald-valid);">Ready</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);" id="current-window-date">
+          Date: --
+        </div>
+      </div>
+
+      <div class="panel-body">
+        
+        <!-- Scorecard Metrics Banner -->
+        <div class="metrics-banner">
+          <div class="metric-box valid">
+            <span class="metric-label">Citation Precision</span>
+            <span id="metric-precision" class="metric-value">--%</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Total Citations</span>
+            <span id="metric-citations" class="metric-value">--</span>
+          </div>
+          <div class="metric-box absence">
+            <span class="metric-label">Absence Handling</span>
+            <span id="metric-absence" class="metric-value">--</span>
+          </div>
+          <div class="metric-box hallucinated">
+            <span class="metric-label">Hallucinations</span>
+            <span id="metric-hallucinations" class="metric-value">0</span>
+          </div>
+        </div>
+
+        <!-- Reconstruction Output Box -->
+        <div class="reconstruction-box">
+          <div class="reconstruction-section-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            <span>Reconstructed Activity (Artifact Grounded)</span>
+          </div>
+          <div id="timeline-content">
+            <p style="color: var(--text-muted); font-style: italic;">Select a window and click "Run Evaluation" to generate forensic reconstruction using Gemma-4-E2B-it.</p>
+          </div>
+        </div>
+
+        <!-- Absence & Negative Evidence Box -->
+        <div class="reconstruction-box" style="border-color: rgba(245, 158, 11, 0.2);">
+          <div class="reconstruction-section-title" style="color: var(--amber-absence);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <span>Documented Activity Without Direct Artifact Support</span>
+          </div>
+          <div id="absence-content">
+            <p style="color: var(--text-muted); font-size: 12px;">No unrecoverable activities detected or evaluated yet.</p>
+          </div>
+        </div>
+
+        <!-- Ground Truth Comparison Table (if available) -->
+        <div id="gt-box" class="gt-comparison" style="display: none;">
+          <div class="gt-header">
+            <span>Ground-Truth Answer Key Comparison</span>
+            <span id="gt-match-count" class="count-chip">-- matches</span>
+          </div>
+          <div id="gt-content" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Provenance Deep Inspector Modal -->
+  <div id="provenance-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span id="modal-evt-id" style="color: var(--cyan-primary); font-family: var(--font-mono);">[EVT-...]</span>
+        <button id="modal-close" class="close-btn">&times;</button>
+      </div>
+      <div id="modal-body" class="modal-body">
+        <!-- Populated on click -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
