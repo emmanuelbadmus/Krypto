@@ -111,7 +111,6 @@ def get_system_status():
         "device": "Google Pixel 3 (Android 9 Pie, PQ2A.190205.001)",
         "corpus": "Joshua Hickman Digital Corpora (2019-02-13 to 2019-04-06)",
         "indexed_events_count": len(evaluator.events_db),
-        "ground_truth_count": len(evaluator.ground_truth_events),
         "ground_truth_count": len(evaluator.ground_truth),
         "available_models": available_models,
         "available_adapters": adapters,
