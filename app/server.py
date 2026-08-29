@@ -29,17 +29,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Paths
+# Clean Primary Data Paths
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DATA_DIR = os.path.join(BASE_DIR, "xx")
-UNSEEN_DATA_DIR = os.path.join(DATA_DIR, "unseen_training_data")
+DATA_DIR = os.path.join(BASE_DIR, "data")
+ARCHIVE_DIR = os.path.join(BASE_DIR, "archive", "legacy_raw_extractions")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 
+EVENTS_DB_PATH = os.path.join(DATA_DIR, "events.jsonl")
+GROUND_TRUTH_PATH = os.path.join(DATA_DIR, "ground_truth.csv")
+
+# Available Datasets
+DATASETS = {
+    "val_split": {
+        "name": "Date-Held-Out Validation Split (23 windows)",
+        "path": os.path.join(DATA_DIR, "val_split.jsonl"),
+    },
+    "train_augmented": {
+        "name": "Primary Augmented Session Windows (113 windows)",
+        "path": os.path.join(DATA_DIR, "train_augmented.jsonl"),
+    },
+    "train_split": {
+        "name": "Training Split (90 windows)",
+        "path": os.path.join(DATA_DIR, "train_split.jsonl"),
+    },
+    "unlabelled_archive": {
+        "name": "Archived Unlabelled Test Windows (52 windows)",
+        "path": os.path.join(ARCHIVE_DIR, "unlabelled.jsonl"),
+    }
+}
+
 # Cached evaluator instance
 evaluator = ForensicEvaluator(
-    ground_truth_csv=os.path.join(UNSEEN_DATA_DIR, "ground_truth.csv") if os.path.exists(os.path.join(UNSEEN_DATA_DIR, "ground_truth.csv")) else None,
-    events_jsonl=os.path.join(UNSEEN_DATA_DIR, "events.jsonl") if os.path.exists(os.path.join(UNSEEN_DATA_DIR, "events.jsonl")) else None,
+    ground_truth_csv=GROUND_TRUTH_PATH if os.path.exists(GROUND_TRUTH_PATH) else None,
+    events_jsonl=EVENTS_DB_PATH if os.path.exists(EVENTS_DB_PATH) else None,
 )
 
 # In-memory cached active runner to prevent reloading model on every request
@@ -72,7 +95,6 @@ def get_system_status():
         {"id": "meta-llama/Llama-3.1-8B-Instruct", "name": "Llama 3.1 8B-Instruct", "type": "hub"},
     ]
     
-    # Check if local adapters exist
     adapters = []
     output_dirs = ["outputs_forensic_gemma_2b", "outputs_forensic_qwen_14b"]
     for od in output_dirs:
@@ -80,146 +102,137 @@ def get_system_status():
         if os.path.exists(full_od):
             adapters.append({"id": full_od, "name": od})
 
-    datasets = [
-        {"id": "unseen", "name": "Unseen Test Windows (52 windows)", "path": "xx/unseen_training_data/unlabelled.jsonl"},
-        {"id": "val_split", "name": "Date-Held-Out Validation Split (23 windows)", "path": "xx/val_split.jsonl"},
-        {"id": "train_augmented", "name": "Augmented Session Windows (113 windows)", "path": "xx/train_augmented.jsonl"},
-        {"id": "train_split", "name": "Training Split (90 windows)", "path": "xx/train_split.jsonl"},
-    ]
+    datasets_list = [{"id": k, "name": v["name"], "path": v["path"]} for k, v in DATASETS.items()]
 
     return {
         "device": "Google Pixel 3 (Android 9 Pie, PQ2A.190205.001)",
         "corpus": "Joshua Hickman Digital Corpora (2019-02-13 to 2019-04-06)",
         "indexed_events_count": len(evaluator.events_db),
-        "ground_truth_count": len(evaluator.ground_truth),
+        "ground_truth_count": len(evaluator.ground_truth_events),
         "available_models": available_models,
         "available_adapters": adapters,
-        "available_datasets": datasets,
+        "available_datasets": datasets_list,
     }
 
 
 @app.get("/api/windows")
-def list_windows(dataset: str = Query("unseen")):
-    """Returns list of windows in the selected dataset with metadata."""
-    dataset_map = {
-        "unseen": os.path.join(UNSEEN_DATA_DIR, "unlabelled.jsonl"),
-        "val_split": os.path.join(DATA_DIR, "val_split.jsonl"),
-        "train_augmented": os.path.join(DATA_DIR, "train_augmented.jsonl"),
-        "train_split": os.path.join(DATA_DIR, "train_split.jsonl"),
-    }
-    
-    file_path = dataset_map.get(dataset, dataset_map["unseen"])
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail=f"Dataset file {file_path} not found.")
+def get_windows(dataset: str = Query("val_split", description="Dataset identifier: val_split, train_augmented, train_split, unlabelled_archive")):
+    """Returns parsed timeline windows for UI exploration."""
+    if dataset not in DATASETS:
+        raise HTTPException(status_code=404, detail=f"Dataset '{dataset}' not found. Available: {list(DATASETS.keys())}")
+
+    filepath = DATASETS[dataset]["path"]
+    if not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail=f"Dataset file '{filepath}' does not exist on disk.")
 
     windows = []
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         for idx, line in enumerate(f):
-            item = json.loads(line)
-            msgs = item.get("messages", [])
-            user_content = msgs[1]["content"] if len(msgs) > 1 else ""
-            system_content = msgs[0]["content"] if len(msgs) > 0 else ""
-            assistant_content = msgs[2]["content"] if len(msgs) > 2 else None
+            line = line.strip()
+            if not line:
+                continue
+            data = json.loads(line)
+            messages = data.get("messages", [])
 
-            # Extract window/date name
-            window_title = f"Window #{idx+1}"
-            date_str = ""
-            for l in user_content.split("\n"):
-                if l.startswith("Window:") or l.startswith("Date:"):
-                    window_title = l.replace("Window:", "").replace("Date:", "").strip()
-                    parts = window_title.split()
-                    date_str = parts[0] if parts else ""
+            sys_prompt = ""
+            user_prompt = ""
+            target_answer = None
+
+            for msg in messages:
+                role = msg.get("role")
+                content = msg.get("content", "")
+                if role == "system":
+                    sys_prompt = content
+                elif role == "user":
+                    user_prompt = content
+                elif role == "assistant":
+                    target_answer = content
+
+            date_str = None
+            for pline in user_prompt.split("\n"):
+                if pline.startswith("Date:") or pline.startswith("Window:"):
+                    parts = pline.split(":", 1)[1].strip().split()
+                    if parts:
+                        date_str = parts[0]
                     break
 
-            # Count artifacts in prompt
-            event_ids = re.findall(r"\[EVT-([a-f0-9]+)\]", user_content)
+            evt_matches = re.findall(r"\[EVT-([a-f0-9]+)\]", user_prompt)
 
             windows.append({
                 "index": idx,
-                "title": window_title,
                 "date": date_str,
-                "event_count": len(event_ids),
-                "has_target": assistant_content is not None,
-                "system_prompt": system_content,
-                "user_prompt": user_content,
-                "target_answer": assistant_content,
+                "title": date_str if date_str else f"Window #{idx + 1}",
+                "event_count": len(evt_matches),
+                "has_target": target_answer is not None,
+                "system_prompt": sys_prompt,
+                "user_prompt": user_prompt,
+                "target_answer": target_answer,
             })
 
     return {"dataset": dataset, "total_windows": len(windows), "windows": windows}
 
 
 @app.get("/api/provenance/{event_id}")
-def get_event_provenance(event_id: str):
-    """Resolves an [EVT-xxxx] event ID to its exact SQLite database, table, row, and timestamp."""
-    event = evaluator.events_db.get(event_id)
-    if not event:
-        # Check partial match
-        for k, v in evaluator.events_db.items():
-            if k.startswith(event_id) or event_id in k:
-                event = v
-                break
-
-    if not event:
-        raise HTTPException(status_code=404, detail=f"Event ID [EVT-{event_id}] not found in master database.")
-
+def get_provenance(event_id: str):
+    """Deep inspects an event ID to return SQLite provenance row details."""
+    clean_id = event_id.replace("EVT-", "").lower()
+    event_data = evaluator.events_db.get(clean_id)
+    if not event_data:
+        raise HTTPException(status_code=404, detail=f"Event ID '[EVT-{clean_id}]' not found in indexed database.")
+    
     return {
-        "event_id": event.get("event_id"),
-        "timestamp": event.get("timestamp"),
-        "epoch_type": event.get("epoch_type"),
-        "raw_timestamp": event.get("raw_timestamp"),
-        "app": event.get("app"),
-        "artifact_type": event.get("artifact_type"),
-        "db_path": event.get("db_path"),
-        "table": event.get("table"),
-        "row_id": event.get("row_id"),
-        "raw_data": event.get("raw_data", {}),
+        "event_id": f"EVT-{clean_id}",
+        "timestamp": event_data.get("timestamp"),
+        "epoch_type": event_data.get("epoch_type"),
+        "raw_timestamp": event_data.get("raw_timestamp"),
+        "app": event_data.get("app"),
+        "artifact_type": event_data.get("artifact_type"),
+        "db_path": event_data.get("db_path"),
+        "table": event_data.get("table"),
+        "row_id": event_data.get("row_id"),
+        "raw_data": event_data.get("raw_data", {}),
     }
 
 
 @app.post("/api/generate")
 def run_model_inference(req: InferenceRequest):
-    """Runs inference using the selected model on the given prompt."""
+    """Executes live LLM model generation for a forensic prompt."""
     global active_runner, active_model_key
 
     model_key = f"{req.model_name}::{req.adapter_path}"
-    try:
-        if active_runner is None or active_model_key != model_key:
-            # Resolve relative local path
-            model_path = req.model_name
-            if model_path.startswith("models/"):
-                model_path = os.path.join(BASE_DIR, model_path)
-            
-            adapter_path = req.adapter_path
-            if adapter_path and adapter_path.startswith("outputs"):
-                adapter_path = os.path.join(BASE_DIR, adapter_path)
+    if active_runner is None or active_model_key != model_key:
+        try:
+            print(f"[API] Initializing runner for {req.model_name}...")
+            model_target = req.model_name
+            if os.path.exists(os.path.join(BASE_DIR, req.model_name)):
+                model_target = os.path.join(BASE_DIR, req.model_name)
 
-            print(f"[API] Initializing runner for {model_path}...")
             active_runner = get_model_runner(
-                model_name_or_path=model_path,
-                adapter_path=adapter_path,
+                model_name_or_path=model_target,
+                adapter_path=req.adapter_path,
                 chat_template=req.chat_template,
             )
             active_model_key = model_key
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to initialize model '{req.model_name}': {str(e)}")
 
+    try:
         prediction = active_runner.generate(
             system_prompt=req.system_prompt,
             user_prompt=req.user_prompt,
             max_new_tokens=req.max_new_tokens,
             temperature=req.temperature,
         )
-
-        return {"prediction": prediction, "model_key": model_key}
-
+        return {"model": req.model_name, "prediction": prediction}
     except Exception as e:
-        print(f"[API Error in generate] {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 
 @app.post("/api/evaluate")
-def evaluate_reconstruction(req: EvaluationRequest):
-    """Deterministically evaluates a reconstructed output against prompt and ground truth."""
+def evaluate_prediction(req: EvaluationRequest):
+    """Computes deterministic forensic metrics on a generated output."""
     metrics = evaluator.evaluate_window(
-        prediction=req.prediction,
+        prediction_text=req.prediction,
         user_prompt=req.user_prompt,
         target_answer=req.target_answer,
         window_date=req.window_date,
@@ -227,15 +240,9 @@ def evaluate_reconstruction(req: EvaluationRequest):
     return {"metrics": metrics}
 
 
-# Mount Static Files
-os.makedirs(STATIC_DIR, exist_ok=True)
+# Mount Static UI Files
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 @app.get("/")
-def serve_root():
+def serve_index():
     return FileResponse(os.path.join(STATIC_DIR, "index.html"))
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.server:app", host="127.0.0.1", port=8000, reload=True)
-

@@ -19,11 +19,11 @@ def parse_args():
                         help="Model name, path, or Hugging Face repository ID")
     parser.add_argument("--adapter", type=str, default=None,
                         help="Optional path to fine-tuned PEFT / LoRA adapter")
-    parser.add_argument("--data", type=str, default="xx/unseen_training_data/unlabelled.jsonl",
-                        help="Evaluation dataset file (e.g., unlabelled.jsonl, train.jsonl, or val_split.jsonl)")
-    parser.add_argument("--ground_truth", type=str, default="xx/unseen_training_data/ground_truth.csv",
+    parser.add_argument("--data", type=str, default="data/val_split.jsonl",
+                        help="Evaluation dataset file (e.g., val_split.jsonl, train_augmented.jsonl)")
+    parser.add_argument("--ground_truth", type=str, default="data/ground_truth.csv",
                         help="Path to ground_truth.csv")
-    parser.add_argument("--events_db", type=str, default="xx/unseen_training_data/events.jsonl",
+    parser.add_argument("--events_db", type=str, default="data/events.jsonl",
                         help="Path to events.jsonl database (optional)")
     parser.add_argument("--output_json", type=str, default="eval_report.json",
                         help="Path for output JSON metrics")

@@ -9,9 +9,9 @@ import json
 import os
 from collections import defaultdict
 
-INPUT_FILE = "xx/train_augmented.jsonl"
-TRAIN_FILE = "xx/train_split.jsonl"
-VAL_FILE = "xx/val_split.jsonl"
+INPUT_FILE = "data/train_augmented.jsonl"
+TRAIN_FILE = "data/train_split.jsonl"
+VAL_FILE = "data/val_split.jsonl"
 
 # Held-out dates selected for balanced representation of Direct, Absence, and AndroidAuto events
 VAL_DATES = {"2019-02-22", "2019-03-15", "2019-03-28", "2019-04-03"}
