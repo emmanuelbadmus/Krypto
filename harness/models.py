@@ -131,3 +131,4 @@ def get_model_runner(model_name_or_path: str, adapter_path: str = None, backend:
             print(f"[get_model_runner] Unsloth initialization failed ({e}), falling back to HuggingFaceRunner.")
     
     return HuggingFaceRunner(model_name_or_path, adapter_path)
+

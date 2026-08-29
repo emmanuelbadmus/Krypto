@@ -188,3 +188,4 @@ def generate_markdown_report(summary: Dict[str, Any], results: List[Dict[str, An
 
 if __name__ == "__main__":
     main()
+
