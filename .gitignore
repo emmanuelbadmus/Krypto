@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+xx/.DS_Store
+data/.DS_Store
+
+# Large Model Weights and Checkpoints
+models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+*.onnx
+outputs*/
+final_adapter/
+wandb/
+
+# Archives
+*.rar
+*.zip
+*.tar.gz
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
