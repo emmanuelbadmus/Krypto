@@ -1,9 +1,0 @@
-# Requirements for Unsloth Fine-Tuning & Forensic Evaluation on H100
-unsloth
-torch
-transformers
-trl
-datasets
-accelerate
-bitsandbytes
-scipy
