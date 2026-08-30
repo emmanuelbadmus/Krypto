@@ -1,6 +1,6 @@
 """
 Krypto: Mobile Forensic Activity Reconstruction Fine-Tuning Script
-Fine-tunes Gemma-4-E2B-it on GPU / Google Colab using native Hugging Face Trainer.
+Fine-tunes Gemma-4-E2B-it on GPU / Google Colab with Response-Only Loss Masking.
 """
 
 import os
@@ -23,10 +23,10 @@ def parse_args():
     parser.add_argument("--train_file", type=str, default="data/splits/train.jsonl", help="Train dataset path")
     parser.add_argument("--val_file", type=str, default="data/splits/val.jsonl", help="Val dataset path")
     parser.add_argument("--output_dir", type=str, default="outputs_forensic_gemma4_2b", help="Output directory")
-    parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs")
+    parser.add_argument("--epochs", type=int, default=6, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=1, help="Per device train batch size")
     parser.add_argument("--grad_accum", type=int, default=8, help="Gradient accumulation steps")
-    parser.add_argument("--lr", type=float, default=2e-4, help="Learning rate")
+    parser.add_argument("--lr", type=float, default=1.5e-4, help="Learning rate")
     parser.add_argument("--max_seq_len", type=int, default=2048, help="Max sequence length")
     parser.add_argument("--max_steps", type=int, default=-1, help="Max training steps (for testing)")
     return parser.parse_args()
@@ -56,19 +56,13 @@ def setup_auth(token_arg):
 
 
 def load_model_and_tokenizer(model_path, hf_token=None):
-    # If local path exists, prioritize it
     if os.path.exists("models/gemma-4-E2B-it/model.safetensors"):
         model_path = "models/gemma-4-E2B-it"
     
     print(f"📦 Loading Tokenizer and Model from: {model_path}")
     
-    try:
-        from transformers.models.gemma.tokenization_gemma import GemmaTokenizer
-        tokenizer = GemmaTokenizer.from_pretrained(model_path, token=hf_token, trust_remote_code=True)
-    except Exception:
-        from transformers import AutoTokenizer
-        tokenizer = AutoTokenizer.from_pretrained(model_path, token=hf_token, trust_remote_code=True)
-        
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained(model_path, token=hf_token, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
@@ -100,11 +94,9 @@ def load_model_and_tokenizer(model_path, hf_token=None):
 def apply_lora(model):
     print("💉 Injecting LoRA Target Adapters into Language Model...")
     
-    # Handle Gemma4 nested architecture vs standard CausalLM
     if hasattr(model, "model") and hasattr(model.model, "language_model"):
         num_layers = len(model.model.language_model.layers)
-        target_mods = [f"model.language_model.layers.{i}.self_attn.{p}" for i in range(num_layers) for p in ["q_proj", "k_proj", "v_proj", "o_proj"]] + \
-                      [f"model.language_model.layers.{i}.mlp.{p}" for i in range(num_layers) for p in ["gate_proj", "up_proj", "down_proj"]]
+        target_mods = [f"model.language_model.layers.{i}.self_attn.{p}" for i in range(num_layers) for p in ["q_proj", "k_proj", "v_proj", "o_proj"]] + \\\n                      [f"model.language_model.layers.{i}.mlp.{p}" for i in range(num_layers) for p in ["gate_proj", "up_proj", "down_proj"]]
     else:
         target_mods = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
@@ -148,16 +140,38 @@ def prepare_and_tokenize(filepath, tokenizer, max_len=2048):
                             "content": m["content"]
                         })
                 
-                text = tokenizer.apply_chat_template(gemma_msgs, tokenize=False, add_generation_prompt=False)
-                samples.append({"text": text})
+                full_text = tokenizer.apply_chat_template(gemma_msgs, tokenize=False, add_generation_prompt=False)
+                user_only_msgs = [gemma_msgs[0]]
+                prompt_text = tokenizer.apply_chat_template(user_only_msgs, tokenize=False, add_generation_prompt=True)
+                
+                samples.append({"full_text": full_text, "prompt_text": prompt_text})
     
     raw_ds = Dataset.from_list(samples)
+    
     def tok_fn(batch):
-        encoded = tokenizer(batch["text"], truncation=True, max_length=max_len)
-        encoded["labels"] = encoded["input_ids"].copy()
-        return encoded
+        input_ids_list = []
+        attention_mask_list = []
+        labels_list = []
         
-    tokenized_ds = raw_ds.map(tok_fn, batched=True, remove_columns=["text"])
+        for full_t, prompt_t in zip(batch["full_text"], batch["prompt_text"]):
+            encoded = tokenizer(full_t, truncation=True, max_length=max_len)
+            prompt_enc = tokenizer(prompt_t, truncation=True, max_length=max_len, add_special_tokens=False)
+            
+            input_ids = encoded["input_ids"]
+            attention_mask = encoded["attention_mask"]
+            labels = list(input_ids)
+            
+            # Mask input prompt with -100 so loss is computed ONLY on assistant response!
+            prompt_len = min(len(prompt_enc["input_ids"]), len(labels))
+            labels[:prompt_len] = [-100] * prompt_len
+            
+            input_ids_list.append(input_ids)
+            attention_mask_list.append(attention_mask)
+            labels_list.append(labels)
+            
+        return {"input_ids": input_ids_list, "attention_mask": attention_mask_list, "labels": labels_list}
+        
+    tokenized_ds = raw_ds.map(tok_fn, batched=True, remove_columns=["full_text", "prompt_text"])
     return tokenized_ds
 
 
@@ -202,7 +216,7 @@ def evaluate_model(model, tokenizer, val_file, device):
         valid_cited += len(v_c)
         hallucinated_cited += len(h_c)
 
-        has_absence = any(kw in pred_text.lower() for kw in ["without direct artifact support", "sqlcipher", "encrypted", "unrecoverable"])
+        has_absence = any(kw in pred_text.lower() for kw in ["without direct artifact support", "sqlcipher", "encrypted", "unrecoverable", "no matching artifact"])
         if has_absence:
             absence_detected_count += 1
 
@@ -214,9 +228,9 @@ def evaluate_model(model, tokenizer, val_file, device):
     print("  FINAL FORENSIC EVALUATION SCORECARD")
     print("=" * 65)
     print(f"  Total Windows Evaluated:     {len(val_lines)}")
-    print(f"  Overall Citation Precision:  {precision:.2f}%")
+    print(f"  Overall Citation Precision:  {precision:.2f}%\")\n",
     print(f"  Hallucinated Phantom IDs:    {hallucinated_cited}")
-    print(f"  Absence Auditing Accuracy:   {(absence_detected_count / len(val_lines) * 100):.1f}%")
+    print(f"  Absence Auditing Accuracy:   {(absence_detected_count / len(val_lines) * 100):.1f}%\")\n",
     print("=" * 65)
     print(tabulate(results[:10], headers=["Window", "Total Cited", "Valid", "Precision", "Absence"], tablefmt="grid"))
 
@@ -234,7 +248,7 @@ def main():
     model, tokenizer, device = load_model_and_tokenizer(args.model_name, hf_token=hf_token)
     model = apply_lora(model)
 
-    print(f"📊 Preparing datasets from {args.train_file} and {args.val_file}...")
+    print(f"📊 Preparing datasets with Response-Only Loss Masking from {args.train_file} and {args.val_file}...")
     train_dataset = prepare_and_tokenize(args.train_file, tokenizer, max_len=args.max_seq_len)
     val_dataset = prepare_and_tokenize(args.val_file, tokenizer, max_len=args.max_seq_len)
     print(f"✅ Ready: {len(train_dataset)} training samples | {len(val_dataset)} validation samples.")
@@ -244,7 +258,7 @@ def main():
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
         gradient_checkpointing=True,
-        warmup_steps=5,
+        warmup_steps=10,
         num_train_epochs=args.epochs,
         max_steps=args.max_steps,
         learning_rate=args.lr,
@@ -268,7 +282,7 @@ def main():
         data_collator=data_collator,
     )
 
-    print("\n🚀 Starting GPU Fine-Tuning...")
+    print(f"\n🚀 Starting GPU Fine-Tuning ({args.epochs} Epochs with Cosine Decay)...")
     trainer_stats = trainer.train()
     print(f"✅ Training Complete! Runtime: {trainer_stats.metrics['train_runtime']:.2f}s")
 
@@ -283,4 +297,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

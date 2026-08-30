@@ -1,132 +1,117 @@
-#!/usr/bin/env python3
 """
-train_unsloth.py
-Production-grade LoRA fine-tuning script for H100 / A100 GPUs.
-Fine-tunes lightweight models (e.g. google/gemma-2-2b-it, Qwen/Qwen2.5-14B) on mobile digital forensic
-timeline reconstruction, 100% citation discipline, absence/SQLCipher auditing, and indirect commute inference.
+Krypto: Mobile Forensic Activity Reconstruction Fine-Tuning Script (Unsloth / GPU Server)
+Fine-tunes Gemma-4-E2B-it with Response-Only Loss Masking.
 """
 
 import os
 import sys
+import gc
 import json
+import re
 import argparse
 import torch
 from datasets import Dataset
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from peft import LoraConfig, get_peft_model
-from trl import SFTConfig, SFTTrainer
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Fine-tune LLM for Forensic Auditing with LoRA")
-    parser.add_argument("--model_name", type=str, default="google/gemma-2-2b-it",
-                        help="Base model from Hugging Face (e.g. google/gemma-2-2b-it, Qwen/Qwen2.5-14B-Instruct, meta-llama/Llama-3.1-8B-Instruct)")
-    parser.add_argument("--train_file", type=str, default="data/splits/train.jsonl",
-                        help="Path to training jsonl (90 date-held-out windows)")
-    parser.add_argument("--val_file", type=str, default="data/splits/val.jsonl",
-                        help="Path to validation jsonl (23 held-out windows)")
-    parser.add_argument("--output_dir", type=str, default="outputs_forensic_gemma_2b",
-                        help="Directory to save checkpoints and final LoRA adapter")
-    parser.add_argument("--max_seq_length", type=int, default=8192,
-                        help="Maximum sequence length (8k context for long SQLite dumps)")
-    parser.add_argument("--epochs", type=int, default=3,
-                        help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=2,
-                        help="Per-device batch size")
-    parser.add_argument("--grad_accum", type=int, default=4,
-                        help="Gradient accumulation steps (effective batch size = 8)")
-    parser.add_argument("--learning_rate", type=float, default=2e-4,
-                        help="Learning rate for LoRA adapter")
-    parser.add_argument("--lora_rank", type=int, default=32,
-                        help="LoRA rank (r)")
-    parser.add_argument("--lora_alpha", type=int, default=64,
-                        help="LoRA alpha scaling factor")
-    parser.add_argument("--lora_dropout", type=float, default=0.05,
-                        help="LoRA dropout")
-    return parser.parse_args()
-
-
-def load_and_format_dataset(filepath, tokenizer):
-    """Loads a JSONL dataset and formats messages using the tokenizer chat template."""
-    print(f"[Dataset] Loading data from {filepath}...")
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Dataset file not found: {filepath}")
-
-    samples = []
-    with open(filepath, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            data = json.loads(line)
-            messages = data.get("messages", [])
-            
-            if len(messages) >= 2:
-                text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
-                samples.append({"text": text})
-
-    print(f"[Dataset] Formatted {len(samples)} valid training samples from {filepath}.")
-    return Dataset.from_list(samples)
+from transformers import Trainer, TrainingArguments, DataCollatorForSeq2Seq
+from peft import LoraConfig, get_peft_model, TaskType
 
 
 def main():
-    args = parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs", type=int, default=6)
+    parser.add_argument("--lr", type=float, default=1.5e-4)
+    parser.add_argument("--batch_size", type=int, default=1)
+    parser.add_argument("--grad_accum", type=int, default=8)
+    args = parser.parse_args()
 
-    print("=" * 75)
-    print("  KRYPTO: MOBILE FORENSIC LLM FINE-TUNING PIPELINE (LORA)")
-    print(f"  Base Model:       {args.model_name}")
-    print(f"  Train Split:      {args.train_file}")
-    print(f"  Val Split:        {args.val_file}")
-    print(f"  Output Dir:       {args.output_dir}")
-    print(f"  Max Context Len:  {args.max_seq_length} tokens")
-    print(f"  LoRA Rank (r):    {args.lora_rank}, Alpha: {args.lora_alpha}")
-    print(f"  Epochs:           {args.epochs}")
-    print(f"  Device:           {'CUDA (GPU)' if torch.cuda.is_available() else 'CPU'}")
-    print("=" * 75)
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
-    # 1. Load Tokenizer
-    print(f"\n[1/5] Loading tokenizer for {args.model_name}...")
-    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
+    model_name = "models/gemma-4-E2B-it" if os.path.exists("models/gemma-4-E2B-it/model.safetensors") else "google/gemma-4-E2B-it"
+    print(f"Loading {model_name}...")
+
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # 2. Load Base Model
-    print(f"[2/5] Loading base model {args.model_name}...")
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model_name,
-        torch_dtype=torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float16 if torch.cuda.is_available() else torch.float32,
-        device_map="auto" if torch.cuda.is_available() else None,
-        trust_remote_code=True,
-    )
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    dtype = torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float32
 
-    # 3. Add LoRA Adapters
-    print("[3/5] Injecting LoRA adapters into projection layers...")
+    try:
+        from transformers import Gemma4ForConditionalGeneration
+        model = Gemma4ForConditionalGeneration.from_pretrained(model_name, torch_dtype=dtype, trust_remote_code=True)
+    except Exception:
+        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype, trust_remote_code=True)
+
+    model = model.to(device)
+
+    if hasattr(model, "model") and hasattr(model.model, "language_model"):
+        num_layers = len(model.model.language_model.layers)
+        target_mods = [f"model.language_model.layers.{i}.self_attn.{p}" for i in range(num_layers) for p in ["q_proj", "k_proj", "v_proj", "o_proj"]] + \
+                      [f"model.language_model.layers.{i}.mlp.{p}" for i in range(num_layers) for p in ["gate_proj", "up_proj", "down_proj"]]
+    else:
+        target_mods = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+
     peft_config = LoraConfig(
-        r=args.lora_rank,
-        lora_alpha=args.lora_alpha,
-        target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
-        lora_dropout=args.lora_dropout,
+        r=32,
+        lora_alpha=64,
+        target_modules=target_mods,
+        lora_dropout=0.05,
         bias="none",
-        task_type="CAUSAL_LM",
+        task_type=TaskType.CAUSAL_LM,
     )
-    model = get_peft_model(model, peft_config)
+    model = get_peft_model(model, peft_config, low_cpu_mem_usage=False)
     model.print_trainable_parameters()
 
-    # 4. Prepare Datasets
-    print("\n[4/5] Loading and formatting dataset splits...")
-    train_dataset = load_and_format_dataset(args.train_file, tokenizer)
-    val_dataset = load_and_format_dataset(args.val_file, tokenizer) if args.val_file else None
+    def prepare_dataset(filepath, max_len=2048):
+        samples = []
+        with open(filepath, "r", encoding="utf-8") as f:
+            for line in f:
+                if not line.strip(): continue
+                item = json.loads(line)
+                msgs = item.get("messages", [])
+                if len(msgs) >= 2:
+                    gemma_msgs = []
+                    system_text = ""
+                    for m in msgs:
+                        if m["role"] == "system":
+                            system_text = m["content"].strip() + "\n\n"
+                        elif m["role"] == "user":
+                            gemma_msgs.append({"role": "user", "content": (system_text + m["content"]).strip()})
+                            system_text = ""
+                        elif m["role"] in ("assistant", "model"):
+                            gemma_msgs.append({"role": "assistant", "content": m["content"]})
+                    full_text = tokenizer.apply_chat_template(gemma_msgs, tokenize=False)
+                    prompt_text = tokenizer.apply_chat_template([gemma_msgs[0]], tokenize=False, add_generation_prompt=True)
+                    samples.append({"full_text": full_text, "prompt_text": prompt_text})
+        raw_ds = Dataset.from_list(samples)
+        def tok_fn(batch):
+            input_ids_list, attention_mask_list, labels_list = [], [], []
+            for full_t, prompt_t in zip(batch["full_text"], batch["prompt_text"]):
+                encoded = tokenizer(full_t, truncation=True, max_length=max_len)
+                prompt_enc = tokenizer(prompt_t, truncation=True, max_length=max_len, add_special_tokens=False)
+                input_ids = encoded["input_ids"]
+                labels = list(input_ids)
+                prompt_len = min(len(prompt_enc["input_ids"]), len(labels))
+                labels[:prompt_len] = [-100] * prompt_len
+                input_ids_list.append(input_ids)
+                attention_mask_list.append(encoded["attention_mask"])
+                labels_list.append(labels)
+            return {"input_ids": input_ids_list, "attention_mask": attention_mask_list, "labels": labels_list}
+        return raw_ds.map(tok_fn, batched=True, remove_columns=["full_text", "prompt_text"])
 
-    # 5. Configure Training Arguments with SFTConfig
-    print("\n[5/5] Configuring SFT Trainer hyper-parameters...")
-    training_args = SFTConfig(
-        output_dir=args.output_dir,
-        dataset_text_field="text",
-        max_length=args.max_seq_length,
+    train_ds = prepare_dataset("data/splits/train.jsonl")
+    val_ds = prepare_dataset("data/splits/val.jsonl")
+
+    training_args = TrainingArguments(
+        output_dir="outputs_forensic_gemma4_2b",
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
-        warmup_ratio=0.05,
+        gradient_checkpointing=True,
+        warmup_steps=10,
         num_train_epochs=args.epochs,
-        learning_rate=args.learning_rate,
+        learning_rate=args.lr,
         fp16=not torch.cuda.is_bf16_supported() if torch.cuda.is_available() else False,
         bf16=torch.cuda.is_bf16_supported() if torch.cuda.is_available() else False,
         logging_steps=1,
@@ -137,27 +122,20 @@ def main():
         report_to="none",
     )
 
-    trainer = SFTTrainer(
+    trainer = Trainer(
         model=model,
-        processing_class=tokenizer,
-        train_dataset=train_dataset,
-        eval_dataset=val_dataset,
         args=training_args,
+        train_dataset=train_ds,
+        eval_dataset=val_ds,
+        data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer, pad_to_multiple_of=8),
     )
 
-    print("\nLaunching GPU Training...")
-    trainer_stats = trainer.train()
-    print(f"\n[Training Complete] Runtime: {trainer_stats.metrics['train_runtime']:.2f}s | Global Steps: {trainer_stats.global_step}")
+    print("Starting training...")
+    trainer.train()
+    model.save_pretrained("outputs_forensic_gemma4_2b/final_adapter")
+    tokenizer.save_pretrained("outputs_forensic_gemma4_2b/final_adapter")
+    print("Adapter saved successfully!")
 
-    # Save LoRA Adapter & Tokenizer
-    final_adapter_dir = os.path.join(args.output_dir, "final_adapter")
-    print(f"\n[Saving] Saving fine-tuned LoRA adapter to {final_adapter_dir}...")
-    model.save_pretrained(final_adapter_dir)
-    tokenizer.save_pretrained(final_adapter_dir)
-
-    print("\n" + "=" * 75)
-    print(f"  SUCCESS: Fine-tuned LoRA adapter saved to '{final_adapter_dir}'")
-    print("=" * 75)
 
 if __name__ == "__main__":
     main()
