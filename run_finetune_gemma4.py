@@ -96,7 +96,8 @@ def apply_lora(model):
     
     if hasattr(model, "model") and hasattr(model.model, "language_model"):
         num_layers = len(model.model.language_model.layers)
-        target_mods = [f"model.language_model.layers.{i}.self_attn.{p}" for i in range(num_layers) for p in ["q_proj", "k_proj", "v_proj", "o_proj"]] + \\\n                      [f"model.language_model.layers.{i}.mlp.{p}" for i in range(num_layers) for p in ["gate_proj", "up_proj", "down_proj"]]
+        target_mods = [f"model.language_model.layers.{i}.self_attn.{p}" for i in range(num_layers) for p in ["q_proj", "k_proj", "v_proj", "o_proj"]] + \
+                      [f"model.language_model.layers.{i}.mlp.{p}" for i in range(num_layers) for p in ["gate_proj", "up_proj", "down_proj"]]
     else:
         target_mods = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 
@@ -228,9 +229,9 @@ def evaluate_model(model, tokenizer, val_file, device):
     print("  FINAL FORENSIC EVALUATION SCORECARD")
     print("=" * 65)
     print(f"  Total Windows Evaluated:     {len(val_lines)}")
-    print(f"  Overall Citation Precision:  {precision:.2f}%\")\n",
+    print(f"  Overall Citation Precision:  {precision:.2f}%")
     print(f"  Hallucinated Phantom IDs:    {hallucinated_cited}")
-    print(f"  Absence Auditing Accuracy:   {(absence_detected_count / len(val_lines) * 100):.1f}%\")\n",
+    print(f"  Absence Auditing Accuracy:   {(absence_detected_count / len(val_lines) * 100):.1f}%")
     print("=" * 65)
     print(tabulate(results[:10], headers=["Window", "Total Cited", "Valid", "Precision", "Absence"], tablefmt="grid"))
 
@@ -297,4 +298,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
